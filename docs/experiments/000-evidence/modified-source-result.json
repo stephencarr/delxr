@@ -1,0 +1,17 @@
+{
+  "sample_rate": 44100,
+  "channels": 2,
+  "frames": 989121,
+  "peak_s16": 4077,
+  "nonzero_samples": 1494353,
+  "passed": [
+    "OLED tempo encoder response",
+    "step pad LED feedback",
+    "play/stop LED feedback",
+    "non-silent stereo firmware audio"
+  ],
+  "manual": [
+    "Inspect session.ppm for UNSAVED or DELXR",
+    "Listen to audio.wav; real-time output latency is not measured"
+  ]
+}

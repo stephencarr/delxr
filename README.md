@@ -9,6 +9,8 @@ firmware and DelugEmu. A reversible OLED label patch proves our build executes.
 No LXR or Elixir synthesis code has been integrated. See the
 [experiment record](docs/experiments/000-development-foundation.md) for measured
 results, evidence and remaining desktop audio limitations.
+Status: **Partial** — the core loop and WAV capture work; live speaker playback
+and human playability require validation in a desktop audio session.
 
 Upstream source is pinned as Git submodules in `upstream/firmware` and
 `upstream/delugemu`. Their original licences and notices remain in those trees.

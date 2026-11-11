@@ -1,0 +1,6 @@
+BOOT: firmware=/workspace/delxr/artifacts/baseline.elf
+  booting (no-sd) for 12s...
+  no-sd: data-aborts=0 prefetch-aborts=0 irqs=21
+  booting (with-sd) for 12s...
+  with-sd: data-aborts=0 prefetch-aborts=0 irqs=107
+BOOT OK: firmware reached a healthy steady state
