@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Delxr dev loop: build the firmware and boot it in the installed DelugEmu.
+#
+#   ./delxr              build, then run in the emulator
+#   ./delxr build        build only
+#   ./delxr run [args]   run the last build (extra args go to DelugEmu's run.sh,
+#                        e.g. --audio wav, or -- -qmp unix:/tmp/q.sock,server,nowait)
+#
+# Environment:
+#   DELXR_BUILD_TYPE  release (default) | debug | relwithdebinfo
+#   DELUGEMU_APP      path to DelugEmu.app (default: found via Spotlight, then /Applications)
+#   DELXR_SD_SOURCE   folder snapshotted into the dev SD image on first run
+#                     (default: DelugEmu's own card folder)
+set -euo pipefail
+cd "$(dirname "$0")"
+
+BUILD_TYPE="${DELXR_BUILD_TYPE:-release}"
+case "${BUILD_TYPE}" in
+    release) BUILD_DIR="Release" ;;
+    debug) BUILD_DIR="Debug" ;;
+    relwithdebinfo) BUILD_DIR="RelWithDebInfo" ;;
+    *) echo "unknown DELXR_BUILD_TYPE '${BUILD_TYPE}'" >&2; exit 1 ;;
+esac
+FIRMWARE="build/${BUILD_DIR}/deluge.bin"
+SD_IMAGE="build/delxr-sd.img"
+
+build() {
+    # The build itself needs none of dbt's optional Python packages (they serve
+    # flashing/MIDI/pre-commit tasks), and installing them fails behind package
+    # mirrors that lack the pinned versions. Set DBT_NO_PYTHON_UPGRADE= to opt in.
+    DBT_NO_PYTHON_UPGRADE="${DBT_NO_PYTHON_UPGRADE-1}" ./dbt build "${BUILD_TYPE}"
+}
+
+run() {
+    [ -f "${FIRMWARE}" ] || { echo "${FIRMWARE} not found; run ./delxr build" >&2; exit 1; }
+
+    local app="${DELUGEMU_APP:-}"
+    [ -n "${app}" ] || app="$(mdfind 'kMDItemCFBundleIdentifier == "com.geekraver.delugemu"' 2>/dev/null | head -n 1)"
+    [ -n "${app}" ] || app="/Applications/DelugEmu.app"
+    local scripts="${app}/Contents/Resources/scripts"
+    [ -x "${scripts}/run.sh" ] || { echo "DelugEmu not found at ${app} (set DELUGEMU_APP)" >&2; exit 1; }
+
+    # A raw SD image is attached directly, so launches skip DelugEmu's per-launch
+    # folder snapshot. Songs saved in the emulator persist in the image; delete it
+    # to start again from the source folder.
+    if [ ! -f "${SD_IMAGE}" ]; then
+        local src="${DELXR_SD_SOURCE:-${HOME}/Library/Application Support/DelugEmu/sdcard_rw}"
+        [ -d "${src}" ] || { echo "no SD card folder at ${src} (launch DelugEmu.app once, or set DELXR_SD_SOURCE)" >&2; exit 1; }
+        "${scripts}/mksd.sh" "${src}" "${SD_IMAGE}"
+    fi
+
+    echo "delxr: booting ${FIRMWARE} ($(shasum -a 256 "${FIRMWARE}" | cut -c1-12), built $(date -r "${FIRMWARE}" '+%Y-%m-%d %H:%M:%S'))"
+    DELUGEMU_QEMU_BIN="${app}/Contents/MacOS/qemu-system-arm" \
+    DELUGEMU_MIDI_BRIDGE="${app}/Contents/Resources/midi_bridge" \
+        exec "${scripts}/run.sh" "${FIRMWARE}" --sd "${SD_IMAGE}" "$@"
+}
+
+case "${1:-}" in
+    "") build; run ;;
+    build) build ;;
+    run) shift; run "$@" ;;
+    *) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
+esac
