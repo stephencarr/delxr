@@ -1,0 +1,12 @@
+diff --git a/src/deluge/gui/views/session_view.cpp b/src/deluge/gui/views/session_view.cpp
+--- a/src/deluge/gui/views/session_view.cpp
++++ b/src/deluge/gui/views/session_view.cpp
+@@ -2002,7 +2002,7 @@ void SessionView::renderViewDisplay() {
+ 
+ 	char const* name;
+ 	if (currentSong->name.isEmpty()) {
+-		name = "UNSAVED";
++		name = "DELXR"; // Experiment 000: reversible desktop execution marker.
+ 	}
+ 	else {
+ 		name = currentSong->name.get();
