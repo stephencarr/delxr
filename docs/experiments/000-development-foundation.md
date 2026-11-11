@@ -8,7 +8,7 @@ Prove that Deluge firmware can be edited, built, launched and tested entirely on
 
 ## Result
 
-Achieved, with one check left for a human: hearing the audio through the speakers. Everything else below was run and observed.
+Achieved. Everything below was run and observed, and Stephen confirmed by hand on 2026-11-11 that the `DELXR` popup shows and that sound plays through the speakers.
 
 ## Environment
 
@@ -76,7 +76,6 @@ It lives on the branch `experiment/000-dev-foundation`, not on `main`.
 
 ## Not verified
 
-- **Audible sound from the speakers.** The recording proves the firmware generates audio and the emulator outputs it; nobody listened. To check: `./delxr`, click a few pads in the grid, click Play, and listen.
 - Saving to the SD card (only reading was exercised).
 - The Select encoder and the two scroll encoders showed no visible change in the one view tried; they were not investigated further.
 - MIDI, and the Debug build type.
