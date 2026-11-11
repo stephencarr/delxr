@@ -9,6 +9,8 @@
 # Environment:
 #   DELXR_BUILD_TYPE  release (default) | debug | relwithdebinfo
 #   DELUGEMU_APP      path to DelugEmu.app (default: found via Spotlight, then /Applications)
+#   DELXR_SKIN_SCALE  emulator window size: auto (default, fits the main display),
+#                     native, or a percentage from 10 to 100
 #   DELXR_SD_IMAGE    SD card image to use (default: build/delxr-sd.img)
 #   DELXR_SD_SOURCE   folder snapshotted into the dev SD image on first run
 #                     (default: DelugEmu's own card folder)
@@ -65,12 +67,12 @@ run() {
     echo "delxr: booting ${FIRMWARE} ($(shasum -a 256 "${FIRMWARE}" | cut -c1-12), built $(date -r "${FIRMWARE}" '+%Y-%m-%d %H:%M:%S'))"
     DELUGEMU_QEMU_BIN="${app}/Contents/MacOS/qemu-system-arm" \
     DELUGEMU_MIDI_BRIDGE="${app}/Contents/Resources/midi_bridge" \
-        exec "${scripts}/run.sh" "${FIRMWARE}" --sd "${SD_IMAGE}" "$@"
+        exec "${scripts}/run.sh" "${FIRMWARE}" --sd "${SD_IMAGE}" --skin-scale "${DELXR_SKIN_SCALE:-auto}" "$@"
 }
 
 case "${1:-}" in
     "") build; run ;;
     build) build ;;
     run) shift; run "$@" ;;
-    *) sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
+    *) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
 esac
