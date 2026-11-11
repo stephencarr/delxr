@@ -12,10 +12,10 @@ Delxr is an independent project. It is not affiliated with, approved by or suppo
 
 - **Experiment 000 (development foundation): done.** Firmware builds on macOS and boots in the DelugEmu emulator with one command. [Notes](docs/experiments/000-development-foundation.md)
 - **Experiment 001 (one sound from our own code): done.** A from-scratch sine kick, playable from a kit row. [Notes](docs/experiments/001-first-sound.md)
-- **Experiment 002 (four knobs on the kick): working in the emulator**, on the branch `experiment/002-kick-knobs`. Decay, sweep, sweep time and drive on the gold knobs. [Notes](docs/experiments/002-kick-knobs.md)
-- **Experiment 003 (one LXR voice running): working in the emulator**, on the branch `experiment/003-lxr-drum-voice`. The LXR firmware's drum voice, playable from a kit row. [Notes](docs/experiments/003-lxr-drum-voice.md)
+- **Experiment 002 (four knobs on the kick): done.** Decay, sweep, sweep time and drive on the gold knobs. [Notes](docs/experiments/002-kick-knobs.md)
+- **Experiment 003 (one LXR voice running): done in the emulator.** The LXR firmware's drum voice, playable from a kit row. CPU cost on hardware is not yet measured. [Notes](docs/experiments/003-lxr-drum-voice.md)
 
-`main` is upstream v1.3.0 plus the dev script, docs and the kick engine. Decisions so far are in [docs/DECISIONS.md](docs/DECISIONS.md).
+`main` is upstream v1.3.0 plus the dev script, docs, the kick engine and the LXR drum voice. Decisions so far are in [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Requirements
 

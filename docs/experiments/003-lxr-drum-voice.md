@@ -8,6 +8,8 @@ Prove that the LXR firmware's own synthesis code can run inside the Deluge firmw
 
 ## Result
 
+Stephen played this in the emulator on 2026-11-11 and confirmed it works.
+
 Working in the emulator. The LXR drum voice's signal path runs unmodified inside the Deluge firmware as a new oscillator type, "LXR drum", next to our from-scratch kick. The port is feasible. What it costs in CPU on real hardware is still unknown.
 
 ## What was brought in
@@ -46,7 +48,6 @@ The firmware grew by about 114 KB (1.76 MB to 1.88 MB), nearly all of it the LXR
 
 - **CPU cost on a real Deluge.** This is the main open question. The LXR voice is floating-point, with double precision in its envelopes and smoothers, on a processor whose own firmware is fixed-point. The emulator cannot measure it.
 - **Fidelity against a real LXR-02.** The code is the LXR's, but nothing here was compared with the instrument.
-- **How it sounds.** Measured, not listened to.
 - Choosing "LXR drum" from the oscillator menu by hand; several LXR voices at once; fast retriggering; saving and reloading.
 - The LXR's other waveforms, FM between its two oscillators, the transient samples, and the filter at anything but fully open. The code is all present; the wrapper fixes these to a plain kick patch for now.
 

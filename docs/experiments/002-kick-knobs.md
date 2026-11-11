@@ -8,6 +8,8 @@ Give the kick engine real parameters and edit them from the Deluge's gold knobs 
 
 ## Result
 
+Stephen played this in the emulator on 2026-11-11 and confirmed it works.
+
 Working in the emulator. The kick has four controls, each on a gold knob in the test kit, each named on the OLED as it is turned, and each audibly (measurably) changing the sound while the pattern plays.
 
 ## The controls
@@ -47,7 +49,6 @@ Driven over the emulator's control socket with one kick looping every two second
 
 ## Not verified
 
-- **How it feels and sounds to play.** Measured, not listened to.
 - CPU cost. The render now uses a little floating-point setup per block; hardware will tell.
 - Saving and reloading a kit after turning the knobs, parameter locks per step, and modulating a control from an LFO or velocity. These should work through the existing machinery but were not tried.
 - The sound-editor menus for these parameters.
