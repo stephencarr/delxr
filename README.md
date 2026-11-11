@@ -9,9 +9,10 @@ Delxr is a fork of the [Deluge community firmware](https://github.com/Synthstrom
 ## Status
 
 - **Experiment 000 (development foundation): done.** Firmware builds on macOS and boots in the DelugEmu emulator with one command. [Notes](docs/experiments/000-development-foundation.md)
-- **Experiment 001 (one sound from our own code): working in the emulator**, on the branch `experiment/001-first-sound`. A from-scratch sine kick, playable from a kit row. [Notes](docs/experiments/001-first-sound.md)
+- **Experiment 001 (one sound from our own code): done.** A from-scratch sine kick, playable from a kit row. [Notes](docs/experiments/001-first-sound.md)
+- **Experiment 002 (four knobs on the kick): working in the emulator**, on the branch `experiment/002-kick-knobs`. Decay, sweep, sweep time and drive on the gold knobs. [Notes](docs/experiments/002-kick-knobs.md)
 
-`main` is upstream v1.3.0 plus the dev script and docs. Decisions so far are in [docs/DECISIONS.md](docs/DECISIONS.md).
+`main` is upstream v1.3.0 plus the dev script, docs and the kick engine. Decisions so far are in [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Requirements
 

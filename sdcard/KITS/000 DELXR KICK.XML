@@ -89,7 +89,10 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0x00000000</oscAPulseWidth>
+				<oscAPulseWidth>0x1EE978D4</oscAPulseWidth>
+				<oscAWavetablePosition>0x0F1A9FBE</oscAWavetablePosition>
+				<carrier1Feedback>0xC624DD30</carrier1Feedback>
+				<modulator1Feedback>0x80000000</modulator1Feedback>
 				<oscBVolume>0x80000000</oscBVolume>
 				<oscBPulseWidth>0x00000000</oscBPulseWidth>
 				<noiseVolume>0x80000000</noiseVolume>
@@ -154,16 +157,16 @@
 					<controlsParam>volumePostFX</controlsParam>
 				</modKnob>
 				<modKnob>
-					<controlsParam>lpfResonance</controlsParam>
+					<controlsParam>modulator1Feedback</controlsParam>
 				</modKnob>
 				<modKnob>
-					<controlsParam>lpfFrequency</controlsParam>
+					<controlsParam>oscAWavetablePosition</controlsParam>
 				</modKnob>
 				<modKnob>
-					<controlsParam>env1Release</controlsParam>
+					<controlsParam>oscAPhaseWidth</controlsParam>
 				</modKnob>
 				<modKnob>
-					<controlsParam>env1Attack</controlsParam>
+					<controlsParam>carrier1Feedback</controlsParam>
 				</modKnob>
 				<modKnob>
 					<controlsParam>delayFeedback</controlsParam>

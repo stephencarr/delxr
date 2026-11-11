@@ -8,7 +8,7 @@ Add the smallest possible Delxr-owned sound source to the firmware, trigger it f
 
 ## Result
 
-Working in the emulator. A new oscillator type, "Kick", renders a from-scratch sine kick. A one-row test kit plays it from the grid. No LXR or Elixir code was used.
+Done; Stephen confirmed by ear on 2026-11-11. A new oscillator type, "Kick", renders a from-scratch sine kick. A one-row test kit plays it from the grid. No LXR or Elixir code was used.
 
 ## What was built
 

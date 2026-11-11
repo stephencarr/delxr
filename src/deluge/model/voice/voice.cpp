@@ -2451,8 +2451,21 @@ dontUseCache: {}
 		}
 		else if (sound.sources[s].oscType == OscType::DELXR_KICK) {
 			static int32_t kickBuffer[SSI_TX_BUFFER_NUM_SAMPLES] __attribute__((aligned(CACHE_LINE_SIZE)));
-			bool stillSounding =
-			    delxr::Kick::render(unisonParts[u].sources[s].delxrKick, kickBuffer, numSamples, phaseIncrement);
+			// The kick's controls ride on sound parameters that a kick oscillator otherwise leaves unused:
+			// pulse width, wavetable position, and the two FM feedbacks. See getParamDisplayName().
+			constexpr float kHybridMax = 1073741824.0f;  // top of a hybrid param's final value
+			constexpr float kFeedbackMax = 11863280.0f; // top of a feedback param's final value
+			delxr::KickControls controls{
+			    .decay = std::clamp(paramFinalValues[params::LOCAL_OSC_A_PHASE_WIDTH + s] / kHybridMax, 0.0f, 1.0f),
+			    .sweep = std::clamp(paramFinalValues[params::LOCAL_OSC_A_WAVE_INDEX + s] / (2.0f * kHybridMax) + 0.5f,
+			                        0.0f, 1.0f),
+			    .sweepTime =
+			        std::clamp(paramFinalValues[params::LOCAL_CARRIER_0_FEEDBACK + s] / kFeedbackMax, 0.0f, 1.0f),
+			    .drive =
+			        std::clamp(paramFinalValues[params::LOCAL_MODULATOR_0_FEEDBACK + s] / kFeedbackMax, 0.0f, 1.0f),
+			};
+			bool stillSounding = delxr::Kick::render(unisonParts[u].sources[s].delxrKick, controls, kickBuffer,
+			                                         numSamples, phaseIncrement);
 
 			int32_t sourceAmplitudeNow = sourceAmplitude;
 			for (int32_t i = 0; i < numSamples; i++) {

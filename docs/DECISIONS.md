@@ -63,3 +63,10 @@ The first engine, the kick, is a new `OscType` rendered inside the existing synt
 
 - Why: an experiment's test kit is part of the experiment and should be versioned with it.
 - Consequence: `./delxr run` writes to the SD image before each launch, so it cannot run while another emulator has the image open.
+
+## 11. Engine controls reuse spare sound parameters
+
+The kick's four controls are carried by per-voice parameters that a kick oscillator leaves unused (pulse width, wavetable position, two FM feedbacks), renamed in the knob popup.
+
+- Why: every existing control surface then works with no new code: gold knobs, saving, automation, parameter locks, MIDI learn and modulation.
+- Consequence: an engine gets at most four such controls per oscillator, and files and menus keep the borrowed names. An engine needing more will need parameters of its own.
