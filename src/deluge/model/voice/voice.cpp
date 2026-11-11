@@ -2448,6 +2448,29 @@ dontUseCache: {}
 				}
 			}
 
+		}
+		else if (sound.sources[s].oscType == OscType::DELXR_KICK) {
+			static int32_t kickBuffer[SSI_TX_BUFFER_NUM_SAMPLES] __attribute__((aligned(CACHE_LINE_SIZE)));
+			bool stillSounding =
+			    delxr::Kick::render(unisonParts[u].sources[s].delxrKick, kickBuffer, numSamples, phaseIncrement);
+
+			int32_t sourceAmplitudeNow = sourceAmplitude;
+			for (int32_t i = 0; i < numSamples; i++) {
+				sourceAmplitudeNow += amplitudeIncrement;
+				int32_t amplified = multiply_32x32_rshift32(kickBuffer[i], sourceAmplitudeNow) << 1;
+				if (stereoUnison) {
+					oscBuffer[(i << 1)] += multiply_32x32_rshift32(amplified, amplitudeL) << 2;
+					oscBuffer[(i << 1) + 1] += multiply_32x32_rshift32(amplified, amplitudeR) << 2;
+				}
+				else {
+					oscBuffer[i] += amplified;
+				}
+			}
+
+			if (!stillSounding) {
+				goto instantUnassign;
+			}
+
 			// Or regular wave
 		}
 		else [[likely]] {

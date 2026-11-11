@@ -46,3 +46,20 @@ Named `experiment/NNN-short-name`.
 
 - Why: a known-good build is always one checkout away.
 - Consequence: the Experiment 000 `DELXR` popup is on `experiment/000-dev-foundation` and is not merged.
+
+## 8. Delxr engines plug in as oscillator types
+
+The first engine, the kick, is a new `OscType` rendered inside the existing synth voice, the way the DX7 engine is.
+
+- Why: it is the smallest change that makes a new engine playable (about 110 lines), and it keeps engine type, voice and track separate without new architecture. Each kit row already owns its own sound and voice.
+- Consequence: an engine inherits the row's volume, pan, filters, envelopes, effects and file format, and pays for the general voice around it. If hardware measurements show that overhead matters for many drum voices, a dedicated drum type is the alternative to revisit.
+
+## 9. Delxr DSP code lives in `src/deluge/dsp/delxr/`, in the `delxr` namespace
+
+- Why: our own code stays easy to find and to tell apart from upstream's, which keeps merges and licence provenance clear.
+- Consequence: upstream files get only the few lines needed to call into it.
+
+## 10. Test presets live in `sdcard/` and are copied to the dev card on launch
+
+- Why: an experiment's test kit is part of the experiment and should be versioned with it.
+- Consequence: `./delxr run` writes to the SD image before each launch, so it cannot run while another emulator has the image open.

@@ -8,10 +8,10 @@ Delxr is a fork of the [Deluge community firmware](https://github.com/Synthstrom
 
 ## Status
 
-**Experiment 000 (development foundation): done.** Firmware builds on macOS and boots in the DelugEmu emulator with one command. No Delxr features exist yet; `main` is upstream v1.3.0 plus the dev script and docs.
+- **Experiment 000 (development foundation): done.** Firmware builds on macOS and boots in the DelugEmu emulator with one command. [Notes](docs/experiments/000-development-foundation.md)
+- **Experiment 001 (one sound from our own code): working in the emulator**, on the branch `experiment/001-first-sound`. A from-scratch sine kick, playable from a kit row. [Notes](docs/experiments/001-first-sound.md)
 
-- [docs/experiments/000-development-foundation.md](docs/experiments/000-development-foundation.md): what was tested and how
-- [docs/DECISIONS.md](docs/DECISIONS.md): decisions made so far
+`main` is upstream v1.3.0 plus the dev script and docs. Decisions so far are in [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Requirements
 
@@ -39,6 +39,7 @@ That is the whole loop: edit source, run `./delxr`, play. A clean build takes ab
 - The firmware binary is `build/Release/deluge.bin` (`deluge.elf` beside it has symbols).
 - `./delxr run` prints the hash and build time of the binary it boots, so you can tell it is yours and not DelugEmu's bundled firmware.
 - The emulator's SD card is `build/delxr-sd.img`, created on first run from DelugEmu's card folder. Songs saved in the emulator persist there; delete the file to reset it.
+- Files under `sdcard/` in this repository (Delxr test kits) are copied onto that image at every launch. Quit the emulator before launching again; it holds the image while it runs.
 - Extra arguments to `./delxr run` go to DelugEmu's launcher, for example `./delxr run --audio wav` to record audio to `qemu.wav`.
 - To return to the stable baseline: `git checkout main && ./delxr`.
 

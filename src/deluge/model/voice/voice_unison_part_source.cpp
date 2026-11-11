@@ -84,6 +84,9 @@ bool VoiceUnisonPartSource::noteOn(Voice* voice, Source* source, VoiceSamplePlay
 
 		dxVoice->init(*patch, voice->noteCodeAfterArpeggiation, velocity);
 	}
+	else if (synthMode != SynthMode::FM && source->oscType == OscType::DELXR_KICK) {
+		delxrKick.trigger();
+	}
 	else {
 		if (oscRetriggerPhase != 0xFFFFFFFF) {
 			oscPos = getOscInitialPhaseForZero(source->oscType) + oscRetriggerPhase;
