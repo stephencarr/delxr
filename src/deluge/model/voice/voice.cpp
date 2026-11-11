@@ -2449,28 +2449,52 @@ dontUseCache: {}
 			}
 
 		}
-		else if (sound.sources[s].oscType == OscType::DELXR_KICK) {
-			static int32_t kickBuffer[SSI_TX_BUFFER_NUM_SAMPLES] __attribute__((aligned(CACHE_LINE_SIZE)));
-			// The kick's controls ride on sound parameters that a kick oscillator otherwise leaves unused:
-			// pulse width, wavetable position, and the two FM feedbacks. See getParamDisplayName().
-			constexpr float kHybridMax = 1073741824.0f;  // top of a hybrid param's final value
+		else if (sound.sources[s].oscType == OscType::DELXR_KICK
+		         || sound.sources[s].oscType == OscType::DELXR_LXR_DRUM) {
+			static int32_t engineBuffer[SSI_TX_BUFFER_NUM_SAMPLES] __attribute__((aligned(CACHE_LINE_SIZE)));
+			// A Delxr engine's four controls ride on sound parameters that its oscillator otherwise leaves
+			// unused: pulse width, wavetable position, and the two FM feedbacks. See delxrControlName().
+			constexpr float kHybridMax = 1073741824.0f; // top of a hybrid param's final value
 			constexpr float kFeedbackMax = 11863280.0f; // top of a feedback param's final value
-			delxr::KickControls controls{
-			    .decay = std::clamp(paramFinalValues[params::LOCAL_OSC_A_PHASE_WIDTH + s] / kHybridMax, 0.0f, 1.0f),
-			    .sweep = std::clamp(paramFinalValues[params::LOCAL_OSC_A_WAVE_INDEX + s] / (2.0f * kHybridMax) + 0.5f,
-			                        0.0f, 1.0f),
-			    .sweepTime =
-			        std::clamp(paramFinalValues[params::LOCAL_CARRIER_0_FEEDBACK + s] / kFeedbackMax, 0.0f, 1.0f),
-			    .drive =
-			        std::clamp(paramFinalValues[params::LOCAL_MODULATOR_0_FEEDBACK + s] / kFeedbackMax, 0.0f, 1.0f),
+			const float control[4] = {
+			    std::clamp(paramFinalValues[params::LOCAL_OSC_A_PHASE_WIDTH + s] / kHybridMax, 0.0f, 1.0f),
+			    std::clamp(paramFinalValues[params::LOCAL_OSC_A_WAVE_INDEX + s] / (2.0f * kHybridMax) + 0.5f, 0.0f,
+			               1.0f),
+			    std::clamp(paramFinalValues[params::LOCAL_CARRIER_0_FEEDBACK + s] / kFeedbackMax, 0.0f, 1.0f),
+			    std::clamp(paramFinalValues[params::LOCAL_MODULATOR_0_FEEDBACK + s] / kFeedbackMax, 0.0f, 1.0f),
 			};
-			bool stillSounding = delxr::Kick::render(unisonParts[u].sources[s].delxrKick, controls, kickBuffer,
-			                                         numSamples, phaseIncrement);
+
+			bool stillSounding;
+			if (sound.sources[s].oscType == OscType::DELXR_KICK) {
+				delxr::KickControls controls{
+				    .decay = control[0], .sweep = control[1], .sweepTime = control[2], .drive = control[3]};
+				stillSounding = delxr::Kick::render(unisonParts[u].sources[s].delxrKick, controls, engineBuffer,
+				                                    numSamples, phaseIncrement);
+			}
+			else {
+				delxr::LxrDrumVoice* lxrDrum = unisonParts[u].sources[s].lxrDrum;
+				if (lxrDrum == nullptr) {
+					goto instantUnassign;
+				}
+				DelxrLxrDrumControls controls{
+				    .decay = control[0], .pitchAmount = control[1], .pitchDecay = control[2], .drive = control[3]};
+				if (lxrDrum->needsTrigger) {
+					delxr_lxr_drum_trigger(&lxrDrum->drum, &controls);
+					lxrDrum->needsTrigger = false;
+				}
+				// A kit row plays middle C, whose phase increment is 25479976; that plays the patch as tuned.
+				static int16_t lxrBuffer[SSI_TX_BUFFER_NUM_SAMPLES];
+				stillSounding = delxr_lxr_drum_render(&lxrDrum->drum, &controls, phaseIncrement / 25479976.0f,
+				                                      lxrBuffer, numSamples);
+				for (int32_t i = 0; i < numSamples; i++) {
+					engineBuffer[i] = lxrBuffer[i] << 16;
+				}
+			}
 
 			int32_t sourceAmplitudeNow = sourceAmplitude;
 			for (int32_t i = 0; i < numSamples; i++) {
 				sourceAmplitudeNow += amplitudeIncrement;
-				int32_t amplified = multiply_32x32_rshift32(kickBuffer[i], sourceAmplitudeNow) << 1;
+				int32_t amplified = multiply_32x32_rshift32(engineBuffer[i], sourceAmplitudeNow) << 1;
 				if (stereoUnison) {
 					oscBuffer[(i << 1)] += multiply_32x32_rshift32(amplified, amplitudeL) << 2;
 					oscBuffer[(i << 1) + 1] += multiply_32x32_rshift32(amplified, amplitudeR) << 2;

@@ -70,3 +70,22 @@ The kick's four controls are carried by per-voice parameters that a kick oscilla
 
 - Why: every existing control surface then works with no new code: gold knobs, saving, automation, parameter locks, MIDI learn and modulation.
 - Consequence: an engine gets at most four such controls per oscillator, and files and menus keep the borrowed names. An engine needing more will need parameters of its own.
+
+## 12. LXR source is brought in as-is, in its own directory, behind one wrapper header
+
+`src/deluge/dsp/lxr/` holds the LXR files with their copyright headers, the LXR notice, and a README recording the upstream commit and every change. The rest of Delxr includes only `delxr_lxr_drum.h`.
+
+- Why: provenance and licence terms stay clear, later LXR updates can be diffed in, and the LXR's global names and macros cannot collide with the Deluge firmware's.
+- Consequence: each LXR engine brought over needs a small wrapper. The LXR files are built as separate C files, outside the DSP library's batched build.
+
+## 13. LXR voices are per-instance, and run at the LXR's own 64-sample block rate
+
+The LXR's global array of three drum voices became a struct passed by pointer; each sounding Deluge voice borrows one from a pool. The wrapper renders 64 samples at a time into a per-voice buffer.
+
+- Why: "engines are not tracks" requires any number of independent voices. Keeping the LXR's block size keeps its envelope timing without touching its code.
+- Consequence: 640 bytes per sounding voice, and a little buffering in the wrapper.
+
+## 14. Delxr is GPL-3.0-only and announces itself at startup
+
+- Why: both follow from including LXR code, whose licence is GPL-3.0-only and requires modified versions to be marked as such at startup.
+- Consequence: the firmware shows `DELXR` at startup. The project name and the "LXR drum" label still need a trademark decision.

@@ -718,6 +718,9 @@ char const* oscTypeToString(OscType oscType) {
 	case OscType::DELXR_KICK:
 		return "delxrKick";
 
+	case OscType::DELXR_LXR_DRUM:
+		return "delxrLxrDrum";
+
 	default:
 		__builtin_unreachable();
 	}
@@ -760,6 +763,9 @@ OscType stringToOscType(char const* string) {
 	}
 	else if (!strcmp(string, "delxrKick")) {
 		return OscType::DELXR_KICK;
+	}
+	else if (!strcmp(string, "delxrLxrDrum")) {
+		return OscType::DELXR_LXR_DRUM;
 	}
 	else {
 		return OscType::TRIANGLE;

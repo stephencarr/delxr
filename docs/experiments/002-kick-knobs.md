@@ -37,7 +37,7 @@ Driven over the emulator's control socket with one kick looping every two second
 
 | Test | Outcome |
 | --- | --- |
-| Starting sound matches Experiment 001 | Pass: same pitch curve, rings about 200 ms |
+| Starting sound matches Experiment 001 | **Wrong as first reported.** The kit listed two parameters twice, which reset the sweep time to its minimum, so the starting sound had a much shorter sweep than 001's. Fixed in Experiment 003. |
 | Kick decay up to maximum | Pass: OLED "KICK DECAY: 50"; rings past 1.9 s (was 0.2 s) |
 | Kick decay down to minimum | Pass: rings 42 ms |
 | Sweep time up to maximum | Pass: OLED "SWEEP TIME: 50"; pitch still at about 325 Hz after 60 ms (was 75 Hz) |

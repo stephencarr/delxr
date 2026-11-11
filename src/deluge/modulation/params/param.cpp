@@ -110,25 +110,34 @@ void getPatchCableFromShortcut(int32_t xDisplay, int32_t yDisplay, ParamDescript
 	}
 }
 
-/// When a sound's oscillator is a Delxr kick, four otherwise-unused params become the kick's controls.
-/// Returns their name, or nullptr if this param is not acting as a kick control.
-static char const* delxrKickControlName(int32_t p, ModControllableAudio* modControllable) {
+/// When a sound's oscillator is a Delxr engine, four otherwise-unused params become that engine's controls.
+/// Returns their name, or nullptr if this param is not acting as an engine control.
+static char const* delxrControlName(int32_t p, ModControllableAudio* modControllable) {
+	static char const* const controlNames[4] = {"Kick decay", "Kick sweep", "Sweep time", "Kick drive"};
+	static char const* const lxrNames[4] = {"LXR decay", "LXR pitch amt", "LXR pitch dec", "LXR drive"};
 	auto* sound = static_cast<Sound*>(modControllable);
 	for (int32_t s = 0; s < kNumSources; s++) {
-		if (sound->sources[s].oscType != OscType::DELXR_KICK) {
+		char const* const* names = nullptr;
+		if (sound->sources[s].oscType == OscType::DELXR_KICK) {
+			names = controlNames;
+		}
+		else if (sound->sources[s].oscType == OscType::DELXR_LXR_DRUM) {
+			names = lxrNames;
+		}
+		else {
 			continue;
 		}
 		if (p == LOCAL_OSC_A_PHASE_WIDTH + s) {
-			return "Kick decay";
+			return names[0];
 		}
 		if (p == LOCAL_OSC_A_WAVE_INDEX + s) {
-			return "Kick sweep";
+			return names[1];
 		}
 		if (p == LOCAL_CARRIER_0_FEEDBACK + s) {
-			return "Sweep time";
+			return names[2];
 		}
 		if (p == LOCAL_MODULATOR_0_FEEDBACK + s) {
-			return "Kick drive";
+			return names[3];
 		}
 	}
 	return nullptr;
@@ -207,8 +216,8 @@ char const* getPatchedParamShortName(ParamType type) {
 
 char const* getPatchedParamShortName(ParamType type, ModControllableAudio* modControllable) {
 	if (modControllable != nullptr) {
-		if (char const* kickName = delxrKickControlName(type, modControllable)) {
-			return kickName;
+		if (char const* controlName = delxrControlName(type, modControllable)) {
+			return controlName;
 		}
 		// See getParamDisplayName: the ladder filters rename morph after what it actually does.
 		if (type == LOCAL_LPF_MORPH
@@ -385,8 +394,8 @@ char const* getParamDisplayName(Kind kind, int32_t p, ModControllableAudio* modC
 	using enum l10n::String;
 
 	if (modControllable != nullptr && kind == Kind::PATCHED) {
-		if (char const* kickName = delxrKickControlName(p, modControllable)) {
-			return kickName;
+		if (char const* controlName = delxrControlName(p, modControllable)) {
+			return controlName;
 		}
 	}
 

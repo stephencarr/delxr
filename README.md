@@ -4,13 +4,16 @@ An experimental drum-machine firmware for the [Synthstrom Deluge](https://synths
 
 Delxr aims to make the Deluge feel like a playful, immediate drum machine: LXR-style digital drum synthesis, Elixir-style generative sequencing, and the Deluge's own grid, encoders and OLED. It is not a port of any of those instruments.
 
-Delxr is a fork of the [Deluge community firmware](https://github.com/SynthstromAudible/DelugeFirmware) and is licensed under GPL-3.0, like its upstream (see [LICENSE](LICENSE)).
+Delxr is a fork of the [Deluge community firmware](https://github.com/SynthstromAudible/DelugeFirmware). It includes source code from the Erica Synths LXR firmware, so Delxr as a whole is licensed under GPL-3.0-only, with the additional terms in [src/deluge/dsp/lxr/NOTICE.md](src/deluge/dsp/lxr/NOTICE.md) applying to that code (see [LICENSE](LICENSE)).
+
+Delxr is an independent project. It is not affiliated with, approved by or supported by Erica Synths or Synthstrom Audible. "Erica Synths", "LXR" and "LXR-02" are trademarks of Erica Synths.
 
 ## Status
 
 - **Experiment 000 (development foundation): done.** Firmware builds on macOS and boots in the DelugEmu emulator with one command. [Notes](docs/experiments/000-development-foundation.md)
 - **Experiment 001 (one sound from our own code): done.** A from-scratch sine kick, playable from a kit row. [Notes](docs/experiments/001-first-sound.md)
 - **Experiment 002 (four knobs on the kick): working in the emulator**, on the branch `experiment/002-kick-knobs`. Decay, sweep, sweep time and drive on the gold knobs. [Notes](docs/experiments/002-kick-knobs.md)
+- **Experiment 003 (one LXR voice running): working in the emulator**, on the branch `experiment/003-lxr-drum-voice`. The LXR firmware's drum voice, playable from a kit row. [Notes](docs/experiments/003-lxr-drum-voice.md)
 
 `main` is upstream v1.3.0 plus the dev script, docs and the kick engine. Decisions so far are in [docs/DECISIONS.md](docs/DECISIONS.md).
 

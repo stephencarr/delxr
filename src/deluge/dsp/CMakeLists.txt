@@ -8,6 +8,13 @@ file (GLOB_RECURSE deluge_dsp_SOURCES
 
 add_library(deluge_dsp STATIC ${deluge_dsp_SOURCES})
 
+# The LXR sources are separate C translation units upstream; keep them that way.
+file(GLOB deluge_dsp_lxr_SOURCES ${CMAKE_CURRENT_LIST_DIR}/lxr/*.c)
+# Delxr's own C++ files also stay out, so upstream's unity batches are exactly as upstream builds them.
+file(GLOB deluge_dsp_delxr_SOURCES ${CMAKE_CURRENT_LIST_DIR}/delxr/*.cpp)
+set_source_files_properties(${deluge_dsp_lxr_SOURCES} ${deluge_dsp_delxr_SOURCES}
+    PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+
 target_include_directories(deluge_dsp PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/..
   ${SHARED_INCLUDE}

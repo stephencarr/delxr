@@ -87,6 +87,15 @@ bool VoiceUnisonPartSource::noteOn(Voice* voice, Source* source, VoiceSamplePlay
 	else if (synthMode != SynthMode::FM && source->oscType == OscType::DELXR_KICK) {
 		delxrKick.trigger();
 	}
+	else if (synthMode != SynthMode::FM && source->oscType == OscType::DELXR_LXR_DRUM) {
+		if (lxrDrum == nullptr) { // We might already have one, and just be restarting this voice
+			lxrDrum = delxr::acquireLxrDrumVoice();
+			if (lxrDrum == nullptr) {
+				return false;
+			}
+		}
+		lxrDrum->needsTrigger = true; // triggered at the next render, once the controls are known
+	}
 	else {
 		if (oscRetriggerPhase != 0xFFFFFFFF) {
 			oscPos = getOscInitialPhaseForZero(source->oscType) + oscRetriggerPhase;
@@ -111,6 +120,11 @@ void VoiceUnisonPartSource::unassign(bool deletingSong) {
 	if (dxVoice != nullptr) {
 		dxEngine->dxVoiceUnassigned(dxVoice);
 		dxVoice = nullptr;
+	}
+
+	if (lxrDrum != nullptr) {
+		delxr::releaseLxrDrumVoice(lxrDrum);
+		lxrDrum = nullptr;
 	}
 
 	if (livePitchShifter != nullptr) {

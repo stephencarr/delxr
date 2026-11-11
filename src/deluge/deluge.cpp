@@ -844,6 +844,8 @@ extern "C" int32_t deluge_main(void) {
 	PadLEDs::setBrightnessLevel(FlashStorage::defaultPadBrightness);
 	setupBlankSong(); // we always need to do this
 	addConditionalTask(setupStartupSong, 100, isCardReady, "load startup song", RESOURCE_SD | RESOURCE_SD_ROUTINE);
+	// Delxr is modified firmware, and says so at startup (also required by the LXR code's licence terms).
+	display->displayPopup("DELXR");
 
 #ifdef TEST_VECTOR
 	NoteVector noteVector;

@@ -19,6 +19,7 @@
 
 #include "definitions_cxx.hpp"
 #include "dsp/delxr/kick.h"
+#include "dsp/delxr/lxr_drum.h"
 #include "model/sample/sample.h"
 #include <gsl/gsl>
 
@@ -50,4 +51,5 @@ public:
 	LivePitchShifter* livePitchShifter = nullptr;
 	gsl::owner<DxVoice*> dxVoice = nullptr;
 	delxr::KickVoice delxrKick;
+	gsl::owner<delxr::LxrDrumVoice*> lxrDrum = nullptr;
 };
