@@ -1,0 +1,6 @@
+[submodule "upstream/firmware"]
+	path = upstream/firmware
+	url = https://github.com/SynthstromAudible/DelugeFirmware.git
+[submodule "upstream/delugemu"]
+	path = upstream/delugemu
+	url = https://github.com/gramster/delugemu.git
