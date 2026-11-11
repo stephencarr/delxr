@@ -41,6 +41,7 @@ That is the whole loop: edit source, run `./delxr`, play. A clean build takes ab
 - The emulator's SD card is `build/delxr-sd.img`, created on first run from DelugEmu's card folder. Songs saved in the emulator persist there; delete the file to reset it.
 - Files under `sdcard/` in this repository (Delxr test kits) are copied onto that image at every launch. Quit the emulator before launching again; it holds the image while it runs.
 - Extra arguments to `./delxr run` go to DelugEmu's launcher, for example `./delxr run --audio wav` to record audio to `qemu.wav`.
+- The emulator window is sized to fit your main display. Set `DELXR_SKIN_SCALE` to a percentage (for example `DELXR_SKIN_SCALE=60 ./delxr run`) or `native` to override.
 - To return to the stable baseline: `git checkout main && ./delxr`.
 
 In the emulator window, click pads and buttons with the mouse, scroll over an encoder to turn it, and hold Alt while clicking to hold several controls at once (for example Shift plus a pad).
