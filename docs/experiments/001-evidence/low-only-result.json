@@ -1,0 +1,20 @@
+{
+  "isolation": "low",
+  "passed": [
+    "two independent LXR instruments persisted",
+    "two 16-step clips persisted",
+    "distinct sweep values persisted",
+    "song reloaded without crash",
+    "non-silent stereo PCM"
+  ],
+  "peak_s16": 1875,
+  "nonzero_samples": 2683559,
+  "frames": 1746039,
+  "playback_frames": 282624,
+  "playback_peak_s16": 1875,
+  "playback_nonzero_samples": 490346,
+  "manual": [
+    "Inspect loaded.ppm for LXR000 and reloaded.ppm for LXR000 2; listen to audio.wav",
+    "Individual track audibility and live playing feel are not automatically asserted"
+  ]
+}

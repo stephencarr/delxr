@@ -1,5 +1,21 @@
 # Decisions
 
+## 001 — First LXR tonal drum experiment (2026-11-11)
+
+- Add an oscillator type to existing Deluge instruments. Engine state belongs
+  to each voice/unison source, preserving arbitrary sequencer track architecture.
+  Reuse pitch, Pulse Width and oscillator Feedback storage for tuning, sweep and
+  FM; preserve existing envelope, filter and effects conventions.
+- Begin with the LXR tonal-drum kernel: sine table/FM, shaped decay and snap.
+  Other voice families and the complete LXR parameter system remain outside
+  this slice. Parameters latch on note trigger; internal decay is fixed at 0.5 s.
+- Keep the implementation as an explicit patch against the pinned firmware,
+  including original LXR licence terms and provenance. The upstream checkout
+  can return to its unchanged baseline without a fork or private Git commits.
+- Manual-based behavior review remains outstanding because the manufacturer
+  site could not be retrieved. The current mappings are source-led prototype
+  decisions and do not claim manual equivalence or preset compatibility.
+
 ## 000 — Desktop foundation (2026-11-11)
 
 - Keep the existing Delxr repository; use `experiment/000-development-foundation`.

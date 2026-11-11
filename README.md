@@ -4,9 +4,15 @@ An experimental drum-machine firmware project for the Synthstrom Deluge,
 inspired by the LXR-02's sound design and Elixir's generative performance.
 Musical enjoyment guides small, independently verifiable experiments.
 
+Experiment 001 adds an experimental **DELXR Kick** oscillator: a restricted LXR
+tonal-drum kernel with independent voices, pitch-sweep and FM controls, using
+Deluge's existing sequencer and effects. See the
+[implementation and validation record](docs/experiments/001-lxr-instrument.md).
+The full LXR instrument and its other engine families are not implemented.
+
 Experiment 000 demonstrates an edit/build/run loop using real Deluge community
 firmware and DelugEmu. A reversible OLED label patch proves our build executes.
-No LXR or Elixir synthesis code has been integrated. See the
+Experiment 000 itself integrated no LXR or Elixir synthesis code. See the
 [experiment record](docs/experiments/000-development-foundation.md) for measured
 results, evidence and remaining desktop audio limitations.
 Status: **Partial** — the core loop and WAV capture work; live speaker playback
