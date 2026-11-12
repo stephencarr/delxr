@@ -14,7 +14,7 @@ Delxr is an independent project. It is not affiliated with, approved by or suppo
 - **Experiment 001 (one sound from our own code): done.** A from-scratch sine kick, playable from a kit row. [Notes](docs/experiments/001-first-sound.md)
 - **Experiment 002 (four knobs on the kick): done.** Decay, sweep, sweep time and drive on the gold knobs. [Notes](docs/experiments/002-kick-knobs.md)
 - **Experiment 003 (one LXR voice running): done in the emulator.** The LXR firmware's drum voice, playable from a kit row. CPU cost on hardware is not yet measured. [Notes](docs/experiments/003-lxr-drum-voice.md)
-- **LXR voice suite:** the remaining native synthesis families now run as independent oscillator types: snare/clap, cymbal, closed hat and open hat. An eight-row kit and two-bar **DELXR JAM** song put the four performance controls on left gold-knob pages. [Playing guide](docs/lxr-voice-suite.md) · [Validation](docs/lxr-voice-suite-validation.md)
+- **LXR voice suite:** the remaining native synthesis families now run as independent oscillator types: snare/clap, cymbal, closed hat and open hat. The native sound-design editor exposes 21–26 controls per family on the left encoders, including independent FM, waveforms, transients, envelopes and internal filters. Load **DELXR SCULPT** for eight contrasting starting patches. [Playing guide](docs/lxr-sound-design.md) · [Validation](docs/lxr-sound-design-validation.md)
 
 The voice-suite work is on one branch, `feature/lxr-voice-suite`, based on `main` at `91bade117`. It retains upstream v1.3.0, the dev script and the existing kick/drum engines. Decisions are in [docs/DECISIONS.md](docs/DECISIONS.md).
 

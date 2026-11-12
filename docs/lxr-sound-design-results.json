@@ -1,0 +1,288 @@
+{
+  "firmware_elf_sha256": "141dc71c8e33333038732c6f31a36badfd646cff27804b5b8d7bd3ce709c0e20",
+  "firmware_bin_sha256": "9366cc009dfb171f5a322a97689c0790c02f42afa9eb9146b316b84d03c3bb10",
+  "host_sculpt_checks": 1759,
+  "legacy_checks": 269,
+  "fixture_tests": 5,
+  "sanitizers": [
+    "address",
+    "undefined",
+    "float-cast-overflow"
+  ],
+  "cases": {
+    "jam": {
+      "isolation": "all",
+      "hat_choke": "native",
+      "choke_probe": false,
+      "firmware_sha256": "141dc71c8e33333038732c6f31a36badfd646cff27804b5b8d7bd3ce709c0e20",
+      "passed": [
+        "eight native kit rows and engine types persisted",
+        "independent drum controls and tuning persisted",
+        "both hat polyphony modes persisted",
+        "four left gold encoder controls changed on each selected row",
+        "two-bar sequencer audio before and after reload",
+        "exact note positions/lengths/velocities/lift/probability/iterance/fill persisted",
+        "reloaded controls persisted in second firmware save",
+        "clean QEMU exit"
+      ],
+      "saved_songs": [
+        "DELXR JAM 2.XML",
+        "DELXR JAM 3.XML"
+      ],
+      "note_counts": [
+        8,
+        3,
+        4,
+        4,
+        2,
+        2,
+        12,
+        4
+      ],
+      "audio_windows": [
+        {
+          "start_frame": 1082357,
+          "end_frame": 1547253,
+          "frames": 464896,
+          "peak_s16": 8392,
+          "nonzero_samples": 918196,
+          "rms_s16": 2590.0168143381425
+        },
+        {
+          "start_frame": 3902453,
+          "end_frame": 4365301,
+          "frames": 462848,
+          "peak_s16": 8767,
+          "nonzero_samples": 923932,
+          "rms_s16": 2933.1440443633637
+        }
+      ],
+      "manual_review": [
+        "Inspect PPM OLED captures for engine/control labels.",
+        "Listen to audio.wav; audio checks do not establish hardware feel or subjective quality."
+      ]
+    },
+    "drum": {
+      "row": 1,
+      "name": "LXR FM ZAP",
+      "firmware_sha256": "141dc71c8e33333038732c6f31a36badfd646cff27804b5b8d7bd3ce709c0e20",
+      "changed_native_controls": [
+        "carrierWave",
+        "mod1Gain",
+        "mod1Tune",
+        "transientLevel",
+        "filterResonance"
+      ],
+      "native_edits": {
+        "carrierWave": {
+          "before": 0,
+          "after": 5
+        },
+        "mod1Gain": {
+          "before": 82,
+          "after": 127
+        },
+        "mod1Tune": {
+          "before": 73,
+          "after": 109
+        },
+        "transientLevel": {
+          "before": 16,
+          "after": 127
+        },
+        "filterResonance": {
+          "before": 54,
+          "after": 127
+        }
+      },
+      "source2_changed": {
+        "carrierWave": {
+          "before": 5,
+          "after": 3
+        }
+      },
+      "saved_songs": [
+        "DELXR JAM 2.XML",
+        "DELXR JAM 3.XML"
+      ],
+      "audio": [
+        {
+          "rms_s16": 538.2852249262346,
+          "peak_s16": 3381,
+          "band_centroid_hz": 517.7720881469425,
+          "band_profile": [
+            0.06427238670290013,
+            0.09840105842250012,
+            0.2386457836403815,
+            0.1269907084587902,
+            0.024430253008223275,
+            0.017029798827337614,
+            0.08655805151076199,
+            0.1923029738292133,
+            0.07831610737367133,
+            0.01603485220607441,
+            0.01934541404623244,
+            0.008968836056792178,
+            0.01737165982908259,
+            0.001521674637116459,
+            0.008761636277678371,
+            0.0010488051732441218
+          ],
+          "start_frame": 1345525,
+          "end_frame": 1712117
+        },
+        {
+          "rms_s16": 476.4118445101481,
+          "peak_s16": 3641,
+          "band_centroid_hz": 634.6864880139563,
+          "band_profile": [
+            0.13346177851589028,
+            0.0533568768486973,
+            0.14352854376294474,
+            0.1059117650906636,
+            0.10880238544926005,
+            0.02348455576620048,
+            0.014802390358203724,
+            0.2451057090910517,
+            0.008205900578327015,
+            0.04406083943698792,
+            0.05231177427712986,
+            0.03516694728748374,
+            0.019258148676939993,
+            0.0059854032097848755,
+            0.004931682828126669,
+            0.0016252988223080065
+          ],
+          "start_frame": 3956725,
+          "end_frame": 4318197
+        }
+      ],
+      "normalized_band_distance": 0.6138723724336409,
+      "rms_ratio_after_before": 0.8850546558758593,
+      "passed": [
+        "left gold/black editor controls changed waveform/FM/filter/transient while sequencer played",
+        "OSC2 remained independently editable while muted",
+        "all28 fields saved/reloaded/resaved",
+        "partial XML default/clamp/unknown handling",
+        "legacy absent patch preserved",
+        "other rows and primary controls/notes unchanged",
+        "measurable non-silent PCM change",
+        "clean QEMU exit"
+      ],
+      "manual_review": "Inspect editor OLED screenshots; no subjective timbre or hardware-feel claim."
+    },
+    "cymbal": {
+      "row": 5,
+      "name": "LXR FM BELL",
+      "firmware_sha256": "141dc71c8e33333038732c6f31a36badfd646cff27804b5b8d7bd3ce709c0e20",
+      "changed_native_controls": [
+        "carrierWave",
+        "mod1Gain",
+        "mod1Tune",
+        "transientLevel",
+        "filterResonance"
+      ],
+      "native_edits": {
+        "carrierWave": {
+          "before": 0,
+          "after": 5
+        },
+        "mod1Gain": {
+          "before": 90,
+          "after": 127
+        },
+        "mod1Tune": {
+          "before": 77,
+          "after": 127
+        },
+        "transientLevel": {
+          "before": 14,
+          "after": 127
+        },
+        "filterResonance": {
+          "before": 40,
+          "after": 127
+        }
+      },
+      "source2_changed": {
+        "carrierWave": {
+          "before": 5,
+          "after": 0
+        }
+      },
+      "saved_songs": [
+        "DELXR JAM 2.XML",
+        "DELXR JAM 3.XML"
+      ],
+      "audio": [
+        {
+          "rms_s16": 308.11273278382316,
+          "peak_s16": 1342,
+          "band_centroid_hz": 664.0530243901349,
+          "band_profile": [
+            0.022738635518711248,
+            0.025257262534734305,
+            0.029292364469510064,
+            0.03624302277673603,
+            0.5737335292838409,
+            0.026719566322346427,
+            0.054693621334813695,
+            0.031100909338070075,
+            0.04135422743914678,
+            0.019192105734679363,
+            0.027705105416108662,
+            0.07643960431779553,
+            0.019065633933210754,
+            0.010433759270652187,
+            0.004584495301724063,
+            0.0014461570079198575
+          ],
+          "start_frame": 1345525,
+          "end_frame": 1709045
+        },
+        {
+          "rms_s16": 314.619707106073,
+          "peak_s16": 1524,
+          "band_centroid_hz": 1168.4200087429717,
+          "band_profile": [
+            0.11070738253052899,
+            0.04219833834520351,
+            0.04857437278868697,
+            0.027433122239844673,
+            0.04784442739431832,
+            0.05850664881914483,
+            0.04225372810261857,
+            0.09599341658661757,
+            0.049759349448340685,
+            0.07524163395072782,
+            0.31450018172214106,
+            0.026698369841008863,
+            0.03216159586405716,
+            0.0213254935852862,
+            0.0043954490232151686,
+            0.0024064897582595805
+          ],
+          "start_frame": 3939317,
+          "end_frame": 4305909
+        }
+      ],
+      "normalized_band_distance": 1.1941383528278093,
+      "rms_ratio_after_before": 1.0211188101947584,
+      "passed": [
+        "left gold/black editor controls changed waveform/FM/filter/transient while sequencer played",
+        "OSC2 remained independently editable while muted",
+        "all28 fields saved/reloaded/resaved",
+        "partial XML default/clamp/unknown handling",
+        "legacy absent patch preserved",
+        "other rows and primary controls/notes unchanged",
+        "measurable non-silent PCM change",
+        "clean QEMU exit"
+      ],
+      "manual_review": "Inspect editor OLED screenshots; no subjective timbre or hardware-feel claim."
+    }
+  },
+  "limits": [
+    "Additional native settings are live and saved, not new automation lanes",
+    "No physical Deluge CPU or subjective LXR comparison measured"
+  ]
+}

@@ -118,3 +118,23 @@ Disable finite-math-only and strict-aliasing assumptions for the imported C file
 
 - Why: noise instances must not depend on rendering order, and sanitizer/production-build behavior must agree at supported control extremes.
 - Consequence: exact retriggers and arbitrary render-chunk partitioning can be tested; this is a source-based adaptation, not a claim of bit-identical LXR hardware output.
+
+## 18. Native LXR sound design gets its own left-encoder editor
+
+The four spare automated parameters are useful performance controls, but fixed
+waveforms, linked metallic operators and hard-coded envelopes/transients cannot
+deliver the LXR's sound-design range. Extend each Source with a compact native
+patch and expose relevant oscillator/FM/envelope/transient/filter settings.
+
+- Why: the user found the first voices too similar and insufficiently sculptable; the instrument needs broad transformations of an individual sound.
+- Consequence: Shift + the small Volume/Pan bank button opens paired pages. X navigates, Y chooses an LXR source, gold knobs edit, and Back exits. The four primary controls retain existing automation; additional live settings save independently for OSC1/OSC2 but are not yet automation lanes. Old files opt out until edited.
+
+## 19. Sound-design validation measures transformations as well as persistence
+
+Exercise all oscillator waves, sampled attacks, filter modes, independent FM
+operators and live edits. Restore native cutoff shaping and the snare's full
+0–22 kHz noise clock; fix PWM wrap, signed PCM transient expansion, rational pitch
+slope endpoints, and the bass wavetable bank selection exposed by these paths.
+
+- Why: successful boot, nonzero PCM and saved knob values did not establish musical variety in the first prototype.
+- Consequence: acoustic tests now check periodicity, upper partials, spectral change, envelope shape and independent modulation. The new DELXR SCULPT demo has distinct patches; hardware/listening assessment remains necessary and is not replaced by these measurements.

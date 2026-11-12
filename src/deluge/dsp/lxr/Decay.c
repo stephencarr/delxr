@@ -23,7 +23,10 @@
 //-------------------------------------------------
 float DecayEg_calcSlopeValue(float val, float slope)
 {
-	return (1+slope)*val/(1+slope*fabsf(val));
+	/* Endpoint limits avoid 0/0 at the native most-exponential slope. */
+    if (val <= 0.f) return 0.f;
+    if (val >= 1.f) return 1.f;
+    return (1+slope)*val/(1+slope*fabsf(val));
 }
 //-------------------------------------------------
 void DecayEg_init(DecayEg* eg)
@@ -76,6 +79,7 @@ void DecayEg_setDecay(DecayEg* eg, uint8_t data2)
 //--------------------------------------------------
 IN_ITCM_RAM void DecayEg_setSlope(DecayEg* eg, uint8_t data2)
 {
+	if (data2 > 126) data2 = 126; /* 127 has an infinite rational-shaper slope */
 	const float amount 	= ((data2/127.f)-0.5f)*2;
 	eg->slope 			= 2*amount/(1-amount);
 }

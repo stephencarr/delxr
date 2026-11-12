@@ -16,6 +16,7 @@
 #define DELXR_LXR_DRUM_H_
 
 #include <stdint.h>
+#include "delxr_lxr_patch.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,6 +43,11 @@ void delxr_lxr_drum_trigger(DelxrLxrDrum* drum, const DelxrLxrDrumControls* cont
  * patched). Returns 0 once the voice has finished sounding. */
 int delxr_lxr_drum_render(DelxrLxrDrum* drum, const DelxrLxrDrumControls* controls, float pitchRatio, int16_t* out,
                           int32_t numSamples);
+
+void delxr_lxr_drum_trigger_patch(DelxrLxrDrum* drum, const DelxrLxrDrumControls* controls,
+                                  const DelxrLxrPatch* patch);
+int delxr_lxr_drum_render_patch(DelxrLxrDrum* drum, const DelxrLxrDrumControls* controls, float pitchRatio,
+                                int16_t* out, int32_t numSamples, const DelxrLxrPatch* patch);
 
 #ifdef __cplusplus
 }

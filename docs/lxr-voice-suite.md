@@ -1,4 +1,8 @@
-# Playing the LXR voice suite
+# Playing the LXR voice suite — first prototype
+
+This describes the original four-control prototype. The current branch adds the
+[native sound-design editor and DELXR SCULPT demo](lxr-sound-design.md). Use that
+guide for the expanded controls and new sounds.
 
 This branch extends the LXR drum voice already in `main` with the native LXR
 snare/clap, cymbal and hi-hat signal paths. It uses Deluge kit rows, sequencing,

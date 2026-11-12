@@ -1,4 +1,8 @@
-# LXR voice suite validation
+# LXR voice suite validation — first prototype
+
+Historical measurements for the original four-control prototype. Current native
+editing and sound-design checks are in [the new validation record](lxr-sound-design-validation.md).
+The earlier checks established signal flow and persistence, not musical range.
 
 The implementation is based on Delxr `main` at `91bade117`, upstream Deluge
 v1.3.0. Source/manual evidence is in [the reference note](lxr-voice-suite-reference.md),

@@ -36,6 +36,14 @@ static uint32_t oscillatorRandom(OscInfo* osc)
 
 /* Delxr: define phase wrap for frequencies above the sample rate, and silence
  * non-finite/negative frequencies before converting to an unsigned increment. */
+/* Convert only the bounded offset, then add in unsigned phase arithmetic. */
+static uint32_t pulseOffset(float width)
+{
+    if (!isfinite(width)) width = 0.f;
+    width = fminf(1.f, fmaxf(0.f, width));
+    return (uint32_t)((double)width * 2147483647.0);
+}
+
 static uint32_t frequencyIncrement(float frequency, double scale)
 {
 	if (!isfinite(frequency) || frequency <= 0.f) return 0;
@@ -61,7 +69,13 @@ static __inline int freqToMidiNote(const float f)
 //-----------------------------------------------------------
 static __inline uint8_t freqToTableIndex(const float f)
 {
-	return freqToMidiNote(f)/12;
+	/* The hardware-era integer log path underflowed below 440 Hz, selecting
+	 * bank four for every bass note. Select the documented octave bank from
+	 * actual pitch, retaining the imported band-limited tables. */
+	if (!isfinite(f) || f <= 8.1758f) return 0;
+	const float octave = (69.f + 12.f * log2f(f / 440.f)) / 12.f;
+	if (octave >= 10.f) return 10;
+	return octave <= 0.f ? 0 : (uint8_t)octave;
 }
 //-----------------------------------------------------------
 
@@ -215,7 +229,7 @@ void calcPwmFmBlock(OscInfo* osc, int16_t* modBuffer, int16_t* buf, uint8_t size
 		const uint32_t oscPhase = osc->phase;
 		int16_t oscOut ;
 		const uint32_t index =  oscPhase + (((uint32_t)(int32_t)(modBuffer[i]*osc->fmMod))<<19);
-		const uint32_t index2 = index + pwm * (UINT32_MAX/2);
+		const uint32_t index2 = index + pulseOffset(pwm);
 
 		 uint32_t  itg	 = index>>22;
 		 uint32_t  itg2 = index2>>22;
@@ -688,7 +702,7 @@ IN_ITCM_RAM void calcPwmBlock(OscInfo* osc, int16_t* buf, uint8_t size ,const fl
 	for(i=0;i<size;i++)
 	{
 		const uint32_t oscPhase = osc->phase;
-		const uint32_t oscPhase2 = osc->phase + pwm * (UINT32_MAX/2);
+		const uint32_t oscPhase2 = osc->phase + pulseOffset(pwm);
 		int16_t oscOut ;
 		uint32_t  itg	= oscPhase>>22;
 		uint32_t  itg2	= oscPhase2>>22;

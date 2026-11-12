@@ -3347,6 +3347,35 @@ void Sound::compensateVolumeForResonance(ModelStackWithThreeMainThings* modelSta
 // paramManager only required for old old song files
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstack-usage="
+// LXR fields have small bounded ranges. Parse with saturation so even an arbitrarily large
+// hand-edited XML integer cannot wrap before clipping; malformed values retain family defaults.
+static bool readLxrPatchValue(Deserializer& reader, int32_t parameter, uint8_t& result) {
+	const char* text = reader.readTagOrAttributeValue();
+	auto skipSpace = [&text] {
+		while (*text == ' ' || *text == '\t' || *text == '\r' || *text == '\n') {
+			++text;
+		}
+	};
+	skipSpace();
+	const bool negative = *text == '-';
+	if (*text == '-' || *text == '+') {
+		++text;
+	}
+	const int32_t maximum = delxr_lxr_patch_param_max(parameter);
+	int32_t value = 0;
+	bool hasDigits = false;
+	while (*text >= '0' && *text <= '9') {
+		hasDigits = true;
+		value = std::min(maximum, value * 10 + (*text++ - '0'));
+	}
+	skipSpace();
+	if (!hasDigits || *text != '\0') {
+		return false;
+	}
+	result = negative ? 0 : static_cast<uint8_t>(value);
+	return true;
+}
+
 /**
  * Reads the parameters from the reader's current file into paramManager
  * stack usage would be unbounded if file contained infinite tags
@@ -3355,12 +3384,36 @@ Error Sound::readSourceFromFile(Deserializer& reader, int32_t s, ParamManagerFor
                                 int32_t readAutomationUpToPos) {
 
 	Source* source = &sources[s];
+	// Stage overrides until the complete source is read: XML attributes or children may put
+	// the oscillator type after lxrParams. Missing fields use the final family's defaults.
+	static_assert(DELXR_LXR_PATCH_PARAM_COUNT <= 32);
+	DelxrLxrPatch loadedLxrPatch{};
+	uint32_t loadedLxrFields = 0;
+	bool hasLxrPatch = false;
+	source->lxrPatchEnabled = false;
 
 	char const* tagName;
 	while (*(tagName = reader.readNextTagOrAttributeName())) {
 		if (!strcmp(tagName, "type")) {
 			source->setOscType(stringToOscType(reader.readTagOrAttributeValue()));
 			reader.exitTag("type");
+		}
+		else if (!strcmp(tagName, "lxrParams")) {
+			hasLxrPatch = true;
+			char const* fieldName;
+			while (*(fieldName = reader.readNextTagOrAttributeName())) {
+				for (int32_t p = 0; p < DELXR_LXR_PATCH_PARAM_COUNT; ++p) {
+					if (!strcmp(fieldName, delxr_lxr_patch_param_name(p))) {
+						if (readLxrPatchValue(reader, p, loadedLxrPatch.value[p])) {
+							loadedLxrFields |= uint32_t{1} << p;
+						}
+						break;
+					}
+				}
+				// Unknown fields (including nested fields from future versions) are safely skipped.
+				reader.exitTag();
+			}
+			reader.exitTag("lxrParams");
 		}
 		else if (!strcmp(tagName, "phaseWidth")) {
 			ENSURE_PARAM_MANAGER_EXISTS
@@ -3623,6 +3676,16 @@ gotError:
 		}
 	}
 
+	if (hasLxrPatch) {
+		if (DelxrLxrPatch* patch = source->ensureLxrPatch()) {
+			for (int32_t p = 0; p < DELXR_LXR_PATCH_PARAM_COUNT; ++p) {
+				if (loadedLxrFields & (uint32_t{1} << p)) {
+					patch->value[p] = loadedLxrPatch.value[p];
+				}
+			}
+		}
+	}
+
 	return Error::NONE;
 }
 #pragma GCC diagnostic pop
@@ -3750,6 +3813,15 @@ void Sound::writeSourceToFile(Serializer& writer, int32_t s, char const* tagName
 			else {
 				goto justCloseTag;
 			}
+		}
+		else if (source->getLxrPatch() != nullptr && synthMode == SynthMode::SUBTRACTIVE) {
+			writer.writeOpeningTagEnd();
+			writer.writeOpeningTagBeginning("lxrParams");
+			for (int32_t p = 0; p < DELXR_LXR_PATCH_PARAM_COUNT; ++p) {
+				writer.writeAttribute(delxr_lxr_patch_param_name(p), delxr_lxr_patch_get(&source->lxrPatch, p));
+			}
+			writer.closeTag();
+			writer.writeClosingTag(tagName);
 		}
 		else if (source->oscType == OscType::DX7
 		         && synthMode != SynthMode::FM) { // Don't combine this with the above "if" - there's an "else" below

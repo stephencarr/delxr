@@ -17,6 +17,7 @@
 
 #include "processing/source.h"
 #include "definitions_cxx.hpp"
+#include "dsp/delxr/oscillator_type.h"
 #include "dsp/dx/engine.h"
 #include "gui/ui/browser/sample_browser.h"
 #include "gui/ui/sound_editor.h"
@@ -252,6 +253,12 @@ OscType Source::getOscType() {
 // If setting to SAMPLE or WAVETABLE, you must call killAllVoices before this, because ranges is going to get
 // emptied.
 void Source::setOscType(OscType newType) {
+	if (newType != oscType) {
+		// Families interpret several fields differently. Switching type starts from that family's
+		// defaults on first edit; reselecting the same type keeps its patch intact.
+		lxrPatchEnabled = false;
+		lxrPatch = {};
+	}
 
 	int32_t multiRangeSize;
 	if (newType == OscType::SAMPLE) {
@@ -297,6 +304,36 @@ doChangeType:
 	if (oscType == OscType::DX7) {
 		ensureDxPatch();
 	}
+}
+
+DelxrLxrFamily Source::getLxrFamily() const {
+	switch (oscType) {
+	case OscType::DELXR_LXR_SNARE:
+		return DELXR_LXR_FAMILY_SNARE;
+	case OscType::DELXR_LXR_CYMBAL:
+		return DELXR_LXR_FAMILY_CYMBAL;
+	case OscType::DELXR_LXR_CLOSED_HAT:
+		return DELXR_LXR_FAMILY_CLOSED_HAT;
+	case OscType::DELXR_LXR_OPEN_HAT:
+		return DELXR_LXR_FAMILY_OPEN_HAT;
+	default:
+		return DELXR_LXR_FAMILY_DRUM;
+	}
+}
+
+DelxrLxrPatch* Source::ensureLxrPatch() {
+	if (!delxr::isLxr(oscType)) {
+		return nullptr;
+	}
+	if (!lxrPatchEnabled) {
+		delxr_lxr_patch_defaults(&lxrPatch, getLxrFamily());
+		lxrPatchEnabled = true;
+	}
+	return &lxrPatch;
+}
+
+const DelxrLxrPatch* Source::getLxrPatch() const {
+	return lxrPatchEnabled && delxr::isLxr(oscType) ? &lxrPatch : nullptr;
 }
 
 DxPatch* Source::ensureDxPatch() {

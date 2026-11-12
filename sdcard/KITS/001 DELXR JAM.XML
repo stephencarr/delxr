@@ -36,11 +36,12 @@
 	</defaultParams>
 	<soundSources>
 		<sound>
-			<name>LXR DRUM LOW</name>
+			<name>LXR LOW THUMP</name>
 			<osc1>
 				<type>delxrLxrDrum</type>
 				<transpose>0</transpose>
 				<cents>0</cents>
+				<lxrParams carrierWave="0" pulseWidth="64" mod1Wave="0" mod1Tune="33" mod2Wave="0" mod2Tune="83" mod1Gain="0" mod2Gain="96" fmMode="1" ampAttack="0" ampSlope="32" pitchSlope="32" pitchAmount="16" pitchDecay="24" transientWave="5" transientLevel="38" transientTune="25" filterType="0" filterCutoff="127" filterResonance="0" filterDrive="40" distortion="0" noiseTune="124" repeat="0" carrierTune="33" carrierFine="64" mod1Fine="64" mod2Fine="64" />
 			</osc1>
 			<osc2>
 				<type>sample</type>
@@ -89,10 +90,10 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0x3AE147AE</oscAPulseWidth>
-				<oscAWavetablePosition>0xCF5C28F5</oscAWavetablePosition>
-				<carrier1Feedback>0xD1EB851E</carrier1Feedback>
-				<modulator1Feedback>0x8F5C28F6</modulator1Feedback>
+				<oscAPulseWidth>0x3D70A3D7</oscAPulseWidth>
+				<oscAWavetablePosition>0xC7AE147B</oscAWavetablePosition>
+				<carrier1Feedback>0xC7AE147B</carrier1Feedback>
+				<modulator1Feedback>0x9EB851EB</modulator1Feedback>
 				<oscBVolume>0x80000000</oscBVolume>
 				<oscBPulseWidth>0x00000000</oscBPulseWidth>
 				<noiseVolume>0x80000000</noiseVolume>
@@ -200,11 +201,12 @@
 			</modKnobs>
 		</sound>
 		<sound>
-			<name>LXR DRUM MID</name>
+			<name>LXR FM ZAP</name>
 			<osc1>
 				<type>delxrLxrDrum</type>
 				<transpose>12</transpose>
 				<cents>0</cents>
+				<lxrParams carrierWave="0" pulseWidth="64" mod1Wave="2" mod1Tune="73" mod2Wave="0" mod2Tune="83" mod1Gain="82" mod2Gain="96" fmMode="0" ampAttack="0" ampSlope="18" pitchSlope="48" pitchAmount="16" pitchDecay="24" transientWave="7" transientLevel="16" transientTune="37" filterType="0" filterCutoff="98" filterResonance="54" filterDrive="50" distortion="0" noiseTune="124" repeat="0" carrierTune="36" carrierFine="64" mod1Fine="64" mod2Fine="64" />
 			</osc1>
 			<osc2>
 				<type>sample</type>
@@ -253,174 +255,10 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0x2A3D70A4</oscAPulseWidth>
-				<oscAWavetablePosition>0xB851EB85</oscAWavetablePosition>
-				<carrier1Feedback>0xE8F5C28F</carrier1Feedback>
-				<modulator1Feedback>0x9999999A</modulator1Feedback>
-				<oscBVolume>0x80000000</oscBVolume>
-				<oscBPulseWidth>0x00000000</oscBPulseWidth>
-				<noiseVolume>0x80000000</noiseVolume>
-				<volume>0x08000000</volume>
-				<pan>0x00000000</pan>
-				<lpfFrequency>0x7FFFFFFF</lpfFrequency>
-				<lpfResonance>0x80000000</lpfResonance>
-				<hpfFrequency>0x80000000</hpfFrequency>
-				<hpfResonance>0x80000000</hpfResonance>
-				<envelope1>
-					<attack>0x80000000</attack>
-					<decay>0xE6666654</decay>
-					<sustain>0x7FFFFFD2</sustain>
-					<release>0x80000000</release>
-				</envelope1>
-				<envelope2>
-					<attack>0xE6666654</attack>
-					<decay>0xE6666654</decay>
-					<sustain>0xFFFFFFE9</sustain>
-					<release>0xE6666654</release>
-				</envelope2>
-				<lfo1Rate>0x1999997E</lfo1Rate>
-				<lfo2Rate>0x00000000</lfo2Rate>
-				<modulator1Amount>0x80000000</modulator1Amount>
-				<modulator2Amount>0x80000000</modulator2Amount>
-				<modulator2Feedback>0x80000000</modulator2Feedback>
-				<carrier2Feedback>0x80000000</carrier2Feedback>
-				<modFXRate>0x00000000</modFXRate>
-				<modFXDepth>0x00000000</modFXDepth>
-				<delayRate>0x00000000</delayRate>
-				<delayFeedback>0x80000000</delayFeedback>
-				<reverbAmount>0x80000000</reverbAmount>
-				<arpeggiatorRate>0x00000000</arpeggiatorRate>
-				<patchCables>
-					<patchCable>
-						<source>velocity</source>
-						<destination>volume</destination>
-						<amount>0x3FFFFFE8</amount>
-					</patchCable>
-				</patchCables>
-				<stutterRate>0x00000000</stutterRate>
-				<sampleRateReduction>0x80000000</sampleRateReduction>
-				<bitCrush>0x80000000</bitCrush>
-				<equalizer>
-					<bass>0x00000000</bass>
-					<treble>0x00000000</treble>
-					<bassFrequency>0x00000000</bassFrequency>
-					<trebleFrequency>0x00000000</trebleFrequency>
-				</equalizer>
-				<modFXOffset>0x00000000</modFXOffset>
-				<modFXFeedback>0x00000000</modFXFeedback>
-			</defaultParams>
-			<midiKnobs>
-			</midiKnobs>
-			<modKnobs>
-				<modKnob>
-					<controlsParam>pan</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>volumePostFX</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>modulator1Feedback</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>oscAWavetablePosition</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>oscAPhaseWidth</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>carrier1Feedback</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>lpfResonance</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>lpfFrequency</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>reverbAmount</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>volumePostReverbSend</controlsParam>
-					<patchAmountFromSource>compressor</patchAmountFromSource>
-				</modKnob>
-				<modKnob>
-					<controlsParam>delayFeedback</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>delayRate</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>pitch</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>stutterRate</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>bitcrushAmount</controlsParam>
-				</modKnob>
-				<modKnob>
-					<controlsParam>sampleRateReduction</controlsParam>
-				</modKnob>
-			</modKnobs>
-		</sound>
-		<sound>
-			<name>LXR DRUM HIGH</name>
-			<osc1>
-				<type>delxrLxrDrum</type>
-				<transpose>19</transpose>
-				<cents>0</cents>
-			</osc1>
-			<osc2>
-				<type>sample</type>
-				<transpose>0</transpose>
-				<cents>0</cents>
-				<loopMode>1</loopMode>
-				<reversed>0</reversed>
-				<timeStretchEnable>0</timeStretchEnable>
-				<timeStretchAmount>0</timeStretchAmount>
-				<fileName />
-				<zone>
-					<startMilliseconds>0</startMilliseconds>
-					<endMilliseconds>9999999</endMilliseconds>
-				</zone>
-			</osc2>
-			<polyphonic>mono</polyphonic>
-			<clippingAmount>0</clippingAmount>
-			<voicePriority>1</voicePriority>
-			<sideChainSend>2147483647</sideChainSend>
-			<lfo1>
-				<type>sine</type>
-				<syncLevel>0</syncLevel>
-			</lfo1>
-			<lfo2>
-				<type>sine</type>
-			</lfo2>
-			<mode>subtractive</mode>
-			<unison>
-				<num>1</num>
-				<detune>8</detune>
-			</unison>
-			<compressor>
-				<syncLevel>6</syncLevel>
-				<attack>327244</attack>
-				<release>936</release>
-			</compressor>
-			<delay>
-				<pingPong>1</pingPong>
-				<analog>0</analog>
-				<syncLevel>7</syncLevel>
-			</delay>
-			<lpfMode>24dB</lpfMode>
-			<modFXType>none</modFXType>
-			<defaultParams>
-				<arpeggiatorGate>0x00000000</arpeggiatorGate>
-				<portamento>0x80000000</portamento>
-				<compressorShape>0xDC28F5B2</compressorShape>
-				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0x1EB851EB</oscAPulseWidth>
-				<oscAWavetablePosition>0xA147AE14</oscAWavetablePosition>
-				<carrier1Feedback>0xC51EB852</carrier1Feedback>
-				<modulator1Feedback>0x8A3D70A4</modulator1Feedback>
+				<oscAPulseWidth>0x26666666</oscAPulseWidth>
+				<oscAWavetablePosition>0x1EB851EB</oscAWavetablePosition>
+				<carrier1Feedback>0xAE147AE1</carrier1Feedback>
+				<modulator1Feedback>0xAE147AE1</modulator1Feedback>
 				<oscBVolume>0x80000000</oscBVolume>
 				<oscBPulseWidth>0x00000000</oscBPulseWidth>
 				<noiseVolume>0x80000000</noiseVolume>
@@ -528,11 +366,12 @@
 			</modKnobs>
 		</sound>
 		<sound>
-			<name>LXR SNARE</name>
+			<name>LXR ROUGH TOM</name>
 			<osc1>
-				<type>delxrLxrSnare</type>
-				<transpose>0</transpose>
+				<type>delxrLxrDrum</type>
+				<transpose>19</transpose>
 				<cents>0</cents>
+				<lxrParams carrierWave="1" pulseWidth="64" mod1Wave="0" mod1Tune="42" mod2Wave="0" mod2Tune="83" mod1Gain="45" mod2Gain="96" fmMode="1" ampAttack="0" ampSlope="44" pitchSlope="20" pitchAmount="16" pitchDecay="24" transientWave="6" transientLevel="28" transientTune="22" filterType="2" filterCutoff="92" filterResonance="70" filterDrive="70" distortion="0" noiseTune="124" repeat="0" carrierTune="38" carrierFine="64" mod1Fine="64" mod2Fine="64" />
 			</osc1>
 			<osc2>
 				<type>sample</type>
@@ -581,9 +420,174 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0x33333333</oscAPulseWidth>
-				<oscAWavetablePosition>0x19999999</oscAWavetablePosition>
-				<carrier1Feedback>0x33333332</carrier1Feedback>
+				<oscAPulseWidth>0x20000000</oscAPulseWidth>
+				<oscAWavetablePosition>0x9999999A</oscAWavetablePosition>
+				<carrier1Feedback>0xD70A3D70</carrier1Feedback>
+				<modulator1Feedback>0x2E147AE1</modulator1Feedback>
+				<oscBVolume>0x80000000</oscBVolume>
+				<oscBPulseWidth>0x00000000</oscBPulseWidth>
+				<noiseVolume>0x80000000</noiseVolume>
+				<volume>0xE8000000</volume>
+				<pan>0x00000000</pan>
+				<lpfFrequency>0x7FFFFFFF</lpfFrequency>
+				<lpfResonance>0x80000000</lpfResonance>
+				<hpfFrequency>0x80000000</hpfFrequency>
+				<hpfResonance>0x80000000</hpfResonance>
+				<envelope1>
+					<attack>0x80000000</attack>
+					<decay>0xE6666654</decay>
+					<sustain>0x7FFFFFD2</sustain>
+					<release>0x80000000</release>
+				</envelope1>
+				<envelope2>
+					<attack>0xE6666654</attack>
+					<decay>0xE6666654</decay>
+					<sustain>0xFFFFFFE9</sustain>
+					<release>0xE6666654</release>
+				</envelope2>
+				<lfo1Rate>0x1999997E</lfo1Rate>
+				<lfo2Rate>0x00000000</lfo2Rate>
+				<modulator1Amount>0x80000000</modulator1Amount>
+				<modulator2Amount>0x80000000</modulator2Amount>
+				<modulator2Feedback>0x80000000</modulator2Feedback>
+				<carrier2Feedback>0x80000000</carrier2Feedback>
+				<modFXRate>0x00000000</modFXRate>
+				<modFXDepth>0x00000000</modFXDepth>
+				<delayRate>0x00000000</delayRate>
+				<delayFeedback>0x80000000</delayFeedback>
+				<reverbAmount>0x80000000</reverbAmount>
+				<arpeggiatorRate>0x00000000</arpeggiatorRate>
+				<patchCables>
+					<patchCable>
+						<source>velocity</source>
+						<destination>volume</destination>
+						<amount>0x3FFFFFE8</amount>
+					</patchCable>
+				</patchCables>
+				<stutterRate>0x00000000</stutterRate>
+				<sampleRateReduction>0x80000000</sampleRateReduction>
+				<bitCrush>0x80000000</bitCrush>
+				<equalizer>
+					<bass>0x00000000</bass>
+					<treble>0x00000000</treble>
+					<bassFrequency>0x00000000</bassFrequency>
+					<trebleFrequency>0x00000000</trebleFrequency>
+				</equalizer>
+				<modFXOffset>0x00000000</modFXOffset>
+				<modFXFeedback>0x00000000</modFXFeedback>
+			</defaultParams>
+			<midiKnobs>
+			</midiKnobs>
+			<modKnobs>
+				<modKnob>
+					<controlsParam>pan</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>volumePostFX</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>modulator1Feedback</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>oscAWavetablePosition</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>oscAPhaseWidth</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>carrier1Feedback</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>lpfResonance</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>lpfFrequency</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>reverbAmount</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>volumePostReverbSend</controlsParam>
+					<patchAmountFromSource>compressor</patchAmountFromSource>
+				</modKnob>
+				<modKnob>
+					<controlsParam>delayFeedback</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>delayRate</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>pitch</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>stutterRate</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>bitcrushAmount</controlsParam>
+				</modKnob>
+				<modKnob>
+					<controlsParam>sampleRateReduction</controlsParam>
+				</modKnob>
+			</modKnobs>
+		</sound>
+		<sound>
+			<name>LXR BODY SNARE</name>
+			<osc1>
+				<type>delxrLxrSnare</type>
+				<transpose>0</transpose>
+				<cents>0</cents>
+				<lxrParams carrierWave="1" pulseWidth="64" mod1Wave="0" mod1Tune="76" mod2Wave="0" mod2Tune="83" mod1Gain="127" mod2Gain="96" fmMode="0" ampAttack="0" ampSlope="22" pitchSlope="32" pitchAmount="20" pitchDecay="18" transientWave="0" transientLevel="16" transientTune="35" filterType="2" filterCutoff="127" filterResonance="36" filterDrive="48" distortion="20" noiseTune="70" repeat="0" carrierTune="55" carrierFine="64" mod1Fine="64" mod2Fine="64" />
+			</osc1>
+			<osc2>
+				<type>sample</type>
+				<transpose>0</transpose>
+				<cents>0</cents>
+				<loopMode>1</loopMode>
+				<reversed>0</reversed>
+				<timeStretchEnable>0</timeStretchEnable>
+				<timeStretchAmount>0</timeStretchAmount>
+				<fileName />
+				<zone>
+					<startMilliseconds>0</startMilliseconds>
+					<endMilliseconds>9999999</endMilliseconds>
+				</zone>
+			</osc2>
+			<polyphonic>mono</polyphonic>
+			<clippingAmount>0</clippingAmount>
+			<voicePriority>1</voicePriority>
+			<sideChainSend>2147483647</sideChainSend>
+			<lfo1>
+				<type>sine</type>
+				<syncLevel>0</syncLevel>
+			</lfo1>
+			<lfo2>
+				<type>sine</type>
+			</lfo2>
+			<mode>subtractive</mode>
+			<unison>
+				<num>1</num>
+				<detune>8</detune>
+			</unison>
+			<compressor>
+				<syncLevel>6</syncLevel>
+				<attack>327244</attack>
+				<release>936</release>
+			</compressor>
+			<delay>
+				<pingPong>1</pingPong>
+				<analog>0</analog>
+				<syncLevel>7</syncLevel>
+			</delay>
+			<lpfMode>24dB</lpfMode>
+			<modFXType>none</modFXType>
+			<defaultParams>
+				<arpeggiatorGate>0x00000000</arpeggiatorGate>
+				<portamento>0x80000000</portamento>
+				<compressorShape>0xDC28F5B2</compressorShape>
+				<oscAVolume>0x7FFFFFFF</oscAVolume>
+				<oscAPulseWidth>0x26666666</oscAPulseWidth>
+				<oscAWavetablePosition>0x47AE147A</oscAWavetablePosition>
+				<carrier1Feedback>0x23D70A3D</carrier1Feedback>
 				<modulator1Feedback>0x80000000</modulator1Feedback>
 				<oscBVolume>0x80000000</oscBVolume>
 				<oscBPulseWidth>0x00000000</oscBPulseWidth>
@@ -692,11 +696,12 @@
 			</modKnobs>
 		</sound>
 		<sound>
-			<name>LXR CLAP</name>
+			<name>LXR FILTER CLAP</name>
 			<osc1>
 				<type>delxrLxrSnare</type>
 				<transpose>0</transpose>
 				<cents>0</cents>
+				<lxrParams carrierWave="0" pulseWidth="64" mod1Wave="0" mod1Tune="76" mod2Wave="0" mod2Tune="83" mod1Gain="127" mod2Gain="96" fmMode="0" ampAttack="0" ampSlope="15" pitchSlope="32" pitchAmount="0" pitchDecay="24" transientWave="9" transientLevel="38" transientTune="32" filterType="2" filterCutoff="127" filterResonance="55" filterDrive="50" distortion="12" noiseTune="127" repeat="0" carrierTune="55" carrierFine="64" mod1Fine="64" mod2Fine="64" />
 			</osc1>
 			<osc2>
 				<type>sample</type>
@@ -745,9 +750,9 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0x2147AE14</oscAPulseWidth>
-				<oscAWavetablePosition>0xFAE147AE</oscAWavetablePosition>
-				<carrier1Feedback>0x7851EB84</carrier1Feedback>
+				<oscAPulseWidth>0x19999999</oscAPulseWidth>
+				<oscAWavetablePosition>0x26666666</oscAWavetablePosition>
+				<carrier1Feedback>0x75C28F5B</carrier1Feedback>
 				<modulator1Feedback>0x26666666</modulator1Feedback>
 				<oscBVolume>0x80000000</oscBVolume>
 				<oscBPulseWidth>0x00000000</oscBPulseWidth>
@@ -856,11 +861,12 @@
 			</modKnobs>
 		</sound>
 		<sound>
-			<name>LXR CYMBAL</name>
+			<name>LXR FM BELL</name>
 			<osc1>
 				<type>delxrLxrCymbal</type>
 				<transpose>0</transpose>
 				<cents>0</cents>
+				<lxrParams carrierWave="0" pulseWidth="64" mod1Wave="0" mod1Tune="77" mod2Wave="0" mod2Tune="89" mod1Gain="90" mod2Gain="45" fmMode="0" ampAttack="0" ampSlope="40" pitchSlope="32" pitchAmount="16" pitchDecay="24" transientWave="4" transientLevel="14" transientTune="38" filterType="0" filterCutoff="127" filterResonance="40" filterDrive="44" distortion="5" noiseTune="124" repeat="0" carrierTune="58" carrierFine="64" mod1Fine="64" mod2Fine="64" />
 			</osc1>
 			<osc2>
 				<type>sample</type>
@@ -909,10 +915,10 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0x30A3D70A</oscAPulseWidth>
-				<oscAWavetablePosition>0x19999999</oscAWavetablePosition>
+				<oscAPulseWidth>0x428F5C28</oscAPulseWidth>
+				<oscAWavetablePosition>0x2E147AE1</oscAWavetablePosition>
 				<carrier1Feedback>0x00000000</carrier1Feedback>
-				<modulator1Feedback>0x19999999</modulator1Feedback>
+				<modulator1Feedback>0x2E147AE1</modulator1Feedback>
 				<oscBVolume>0x80000000</oscBVolume>
 				<oscBPulseWidth>0x00000000</oscBPulseWidth>
 				<noiseVolume>0x80000000</noiseVolume>
@@ -1020,11 +1026,12 @@
 			</modKnobs>
 		</sound>
 		<sound>
-			<name>LXR CLOSED HAT</name>
+			<name>LXR NOISE TICK</name>
 			<osc1>
 				<type>delxrLxrClosedHat</type>
 				<transpose>0</transpose>
 				<cents>0</cents>
+				<lxrParams carrierWave="4" pulseWidth="64" mod1Wave="3" mod1Tune="76" mod2Wave="4" mod2Tune="100" mod1Gain="96" mod2Gain="127" fmMode="0" ampAttack="0" ampSlope="18" pitchSlope="32" pitchAmount="16" pitchDecay="24" transientWave="8" transientLevel="30" transientTune="30" filterType="1" filterCutoff="127" filterResonance="18" filterDrive="46" distortion="5" noiseTune="124" repeat="0" carrierTune="96" carrierFine="64" mod1Fine="64" mod2Fine="64" />
 			</osc1>
 			<osc2>
 				<type>sample</type>
@@ -1073,14 +1080,14 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0x26666666</oscAPulseWidth>
-				<oscAWavetablePosition>0x19999999</oscAWavetablePosition>
-				<carrier1Feedback>0x00000000</carrier1Feedback>
-				<modulator1Feedback>0x19999999</modulator1Feedback>
+				<oscAPulseWidth>0x1C28F5C2</oscAPulseWidth>
+				<oscAWavetablePosition>0x51EB851E</oscAWavetablePosition>
+				<carrier1Feedback>0xDC28F5C2</carrier1Feedback>
+				<modulator1Feedback>0x3D70A3D6</modulator1Feedback>
 				<oscBVolume>0x80000000</oscBVolume>
 				<oscBPulseWidth>0x00000000</oscBPulseWidth>
 				<noiseVolume>0x80000000</noiseVolume>
-				<volume>0xF0000000</volume>
+				<volume>0x08000000</volume>
 				<pan>0x00000000</pan>
 				<lpfFrequency>0x7FFFFFFF</lpfFrequency>
 				<lpfResonance>0x80000000</lpfResonance>
@@ -1184,11 +1191,12 @@
 			</modKnobs>
 		</sound>
 		<sound>
-			<name>LXR OPEN HAT</name>
+			<name>LXR SIZZLE</name>
 			<osc1>
 				<type>delxrLxrOpenHat</type>
 				<transpose>0</transpose>
 				<cents>0</cents>
+				<lxrParams carrierWave="5" pulseWidth="35" mod1Wave="1" mod1Tune="73" mod2Wave="4" mod2Tune="100" mod1Gain="80" mod2Gain="127" fmMode="0" ampAttack="0" ampSlope="46" pitchSlope="32" pitchAmount="16" pitchDecay="24" transientWave="8" transientLevel="35" transientTune="25" filterType="1" filterCutoff="127" filterResonance="20" filterDrive="50" distortion="24" noiseTune="124" repeat="0" carrierTune="86" carrierFine="64" mod1Fine="64" mod2Fine="64" />
 			</osc1>
 			<osc2>
 				<type>sample</type>
@@ -1237,10 +1245,10 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0x30A3D70A</oscAPulseWidth>
-				<oscAWavetablePosition>0x19999999</oscAWavetablePosition>
-				<carrier1Feedback>0x00000000</carrier1Feedback>
-				<modulator1Feedback>0x19999999</modulator1Feedback>
+				<oscAPulseWidth>0x4F5C28F5</oscAPulseWidth>
+				<oscAWavetablePosition>0x3FFFFFFF</oscAWavetablePosition>
+				<carrier1Feedback>0x1EB851EB</carrier1Feedback>
+				<modulator1Feedback>0x2147AE14</modulator1Feedback>
 				<oscBVolume>0x80000000</oscBVolume>
 				<oscBPulseWidth>0x00000000</oscBPulseWidth>
 				<noiseVolume>0x80000000</noiseVolume>

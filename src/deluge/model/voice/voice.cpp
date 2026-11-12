@@ -2475,6 +2475,9 @@ dontUseCache: {}
 				const float pitchRatio = phaseIncrement / 25479976.0f;
 				static int16_t lxrBuffer[SSI_TX_BUFFER_NUM_SAMPLES];
 				const OscType type = sound.sources[s].oscType;
+				// Read source configuration on each render so edits reach every sounding unison voice.
+				// nullptr keeps presets saved before the native editor on their original DSP path.
+				const DelxrLxrPatch* patch = sound.sources[s].getLxrPatch();
 				if (type == OscType::DELXR_LXR_DRUM) {
 					delxr::LxrDrumVoice* lxrDrum = voiceUnisonPartSource->lxrDrum;
 					if (lxrDrum == nullptr) {
@@ -2483,10 +2486,11 @@ dontUseCache: {}
 					DelxrLxrDrumControls controls{
 					    .decay = control[0], .pitchAmount = control[1], .pitchDecay = control[2], .drive = control[3]};
 					if (lxrDrum->needsTrigger) {
-						delxr_lxr_drum_trigger(&lxrDrum->drum, &controls);
+						delxr_lxr_drum_trigger_patch(&lxrDrum->drum, &controls, patch);
 						lxrDrum->needsTrigger = false;
 					}
-					stillSounding = delxr_lxr_drum_render(&lxrDrum->drum, &controls, pitchRatio, lxrBuffer, numSamples);
+					stillSounding = delxr_lxr_drum_render_patch(&lxrDrum->drum, &controls, pitchRatio,
+					                                             lxrBuffer, numSamples, patch);
 				}
 				else if (type == OscType::DELXR_LXR_SNARE) {
 					delxr::LxrSnareVoice* lxrSnare = voiceUnisonPartSource->lxrSnare;
@@ -2496,10 +2500,11 @@ dontUseCache: {}
 					DelxrLxrSnareControls controls{
 					    .decay = control[0], .tone = control[1], .snappy = control[2], .clap = control[3]};
 					if (lxrSnare->needsTrigger) {
-						delxr_lxr_snare_trigger(&lxrSnare->snare, &controls);
+						delxr_lxr_snare_trigger_patch(&lxrSnare->snare, &controls, patch);
 						lxrSnare->needsTrigger = false;
 					}
-					stillSounding = delxr_lxr_snare_render(&lxrSnare->snare, &controls, pitchRatio, lxrBuffer, numSamples);
+					stillSounding = delxr_lxr_snare_render_patch(&lxrSnare->snare, &controls, pitchRatio,
+					                                             lxrBuffer, numSamples, patch);
 				}
 				else {
 					delxr::LxrMetalVoice* lxrMetal = voiceUnisonPartSource->lxrMetal;
@@ -2511,10 +2516,11 @@ dontUseCache: {}
 					if (lxrMetal->needsTrigger) {
 						const DelxrLxrMetalType metalType = type == OscType::DELXR_LXR_CYMBAL ? DELXR_LXR_CYMBAL
 						    : type == OscType::DELXR_LXR_CLOSED_HAT ? DELXR_LXR_CLOSED_HAT : DELXR_LXR_OPEN_HAT;
-						delxr_lxr_metal_trigger(&lxrMetal->metal, metalType, &controls);
+						delxr_lxr_metal_trigger_patch(&lxrMetal->metal, metalType, &controls, patch);
 						lxrMetal->needsTrigger = false;
 					}
-					stillSounding = delxr_lxr_metal_render(&lxrMetal->metal, &controls, pitchRatio, lxrBuffer, numSamples);
+					stillSounding = delxr_lxr_metal_render_patch(&lxrMetal->metal, &controls, pitchRatio,
+					                                             lxrBuffer, numSamples, patch);
 				}
 				for (int32_t i = 0; i < numSamples; i++) {
 					// Multiplication preserves the full signed Q15 -> Q31 range without shifting negative values.

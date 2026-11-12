@@ -13,7 +13,8 @@
  * Modified for Delxr on 2026-11-11: global voice replaced by an instance pointer;
  * hardware, LFO, velocity, pan and fader services removed (provided by Deluge).
  * Signal order and native block-rate envelope retained. Initialization clears all
- * state; the final negative envelope overshoot is clamped to silence. See README.md.
+ * state; the final negative envelope overshoot is clamped to silence. Live transient
+ * changes release SNAP pitch modulation. See README.md.
  */
 
 #include "CymbalVoice.h"
@@ -64,6 +65,9 @@ void Cymbal_calcAsync(CymbalVoice* voice) {
     if (voice->transGen.waveform == 0) {
         const float snap = SnapEg_calc(&voice->snapEg, voice->transGen.pitch);
         voice->osc.pitchMod = 1.f + snap * voice->transGen.volume;
+    } else {
+        /* A live change away from SNAP must release its previous pitch offset. */
+        voice->osc.pitchMod = 1.f;
     }
     osc_setFreq(&voice->osc);
     osc_setFreq(&voice->modOsc);

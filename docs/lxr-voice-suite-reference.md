@@ -31,7 +31,7 @@ These are deliberate Delxr front-panel selections from a deeper engine. Normal D
 
 Names should reveal the action. In particular, `snappy` here means noise mix, not the LXR transient generator's separate snap mode. `ratio` is the wrapper's linked FM tuning control, not a freely adjustable pair of rational frequency ratios. Descriptive popup names such as “Noise mix” and “FM tune” avoid that ambiguity.
 
-No additional control is essential to audition all four native engine families. Future deeper pages can expose carrier/modulator waveforms, independent FM frequencies and gains, envelope slope, pitch envelope, transient choice/level, filter type/resonance/drive, and cymbal repeats. Full LXR FX-bus routing and kit morph are later work.
+The first four-control surface was sufficient to audition the families but insufficient for LXR-style sound design. The [native editor](lxr-sound-design.md) now exposes carrier/modulator waveforms, independent FM frequencies and gains, envelope slope, pitch envelope, transient choice/level, filter type/resonance/drive, and cymbal repeats. These additional settings are live and persistent; the four original performance controls retain automation. Full LXR FX-bus routing and kit morph remain later work.
 
 ## Physical controls and Deluge conventions
 

@@ -18,6 +18,7 @@
 #pragma once
 
 #include "definitions_cxx.hpp"
+#include "dsp/lxr/delxr_lxr_patch.h"
 #include "model/sample/sample_controls.h"
 #include "storage/multi_range/multi_range_array.h"
 #include "util/phase_increment_fine_tuner.h"
@@ -46,6 +47,11 @@ public:
 
 	DxPatch* dxPatch;
 	bool dxPatchChanged = false;
+
+	// Native LXR settings belong to this oscillator, not its voices. The four primary controls
+	// remain AutoParams; these extra settings are saved with the source and applied live.
+	DelxrLxrPatch lxrPatch{};
+	bool lxrPatchEnabled = false; // Absent in old files: wrappers receive nullptr for exact legacy behavior.
 	SampleRepeatMode repeatMode;
 
 	int8_t timeStretchAmount;
@@ -69,6 +75,11 @@ public:
 	void setOscType(OscType newType);
 
 	DxPatch* ensureDxPatch();
+
+	// Call only when editing, so merely opening an editor does not opt an old preset into new DSP settings.
+	DelxrLxrPatch* ensureLxrPatch();
+	const DelxrLxrPatch* getLxrPatch() const;
+	DelxrLxrFamily getLxrFamily() const;
 
 private:
 	void destructAllMultiRanges();

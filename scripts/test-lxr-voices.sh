@@ -14,8 +14,28 @@ fi
 if [[ "${SANITIZE:-0}" == 1 ]]; then
   flags+=(-O1 -fno-omit-frame-pointer -fsanitize=address,undefined,float-cast-overflow -fno-sanitize-recover=all)
 fi
-for test in lxr_voices_test lxr_snare_test lxr_metal_test; do
+# Convert the authored JSON presets to a named-field stream for the standalone C
+# tests. Python is used only for JSON parsing, not for synthesizing test audio.
+python3 - "$build_dir/jam_presets.txt" <<'PY'
+import json
+import sys
+with open("tests/delxr/jam_presets.json") as source:
+    presets = json.load(source)
+with open(sys.argv[1], "w") as out:
+    print(len(presets), file=out)
+    for preset in presets:
+        print(preset["name"], file=out)
+        print(preset["family"], preset["transpose"], *preset["controls"], file=out)
+        print(len(preset["patch"]), file=out)
+        for name, value in preset["patch"].items():
+            print(name, value, file=out)
+PY
+for test in lxr_voices_test lxr_snare_test lxr_metal_test lxr_sculpt_test; do
   "${CC:-cc}" "${flags[@]}" -Isrc/deluge/dsp/lxr \
     "tests/delxr/$test.c" src/deluge/dsp/lxr/*.c -lm -o "$build_dir/$test"
-  "$build_dir/$test"
+  if [[ "$test" == lxr_sculpt_test ]]; then
+    "$build_dir/$test" "$build_dir/jam_presets.txt"
+  else
+    "$build_dir/$test"
+  fi
 done

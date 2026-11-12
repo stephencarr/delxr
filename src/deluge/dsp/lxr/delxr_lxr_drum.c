@@ -16,6 +16,7 @@
 
 #include "delxr_lxr_drum.h"
 #include "DrumVoice.h"
+#include <stddef.h>
 
 typedef struct {
 	DrumVoice voice;
@@ -45,7 +46,39 @@ static void applyControls(DrumVoice* voice, const DelxrLxrDrumControls* controls
 	setDistortionShape(&voice->distortion, drive);
 }
 
+/* Native sound-design controls, independent of the four automated performance controls. */
+static void applyPatch(DrumVoice* voice, const DelxrLxrPatch* patch) {
+	if (!patch) return;
+#define CC(p) delxr_lxr_patch_get(patch, DELXR_LXR_##p)
+	voice->osc.waveform = CC(CARRIER_WAVE);
+	voice->osc.midiFreq = (CC(CARRIER_TUNE) << 8) | CC(CARRIER_FINE);
+	voice->modOsc.waveform = CC(MOD1_WAVE);
+	voice->modOsc.midiFreq = (CC(MOD1_TUNE) << 8) | CC(MOD1_FINE);
+	osc_setBaseNote(&voice->osc, SEQ_DEFAULT_NOTE);
+	osc_setBaseNote(&voice->modOsc, SEQ_DEFAULT_NOTE);
+	voice->pwm = CC(PULSE_WIDTH) / 127.f;
+	voice->fmModAmount = CC(MOD1_GAIN) / 127.f;
+	voice->mixOscs = CC(FM_MODE);
+	slopeEg2_setAttack(&voice->oscVolEg, CC(AMP_ATTACK), AMP_EG_SYNC);
+	slopeEg2_setSlope(&voice->oscVolEg, CC(AMP_SLOPE));
+	DecayEg_setSlope(&voice->oscPitchEg, CC(PITCH_SLOPE));
+	transient_setWaveform(&voice->transGen, CC(TRANSIENT_WAVE));
+	voice->transGen.volume = CC(TRANSIENT_LEVEL) / 127.f;
+	voice->transGen.pitch = .25f + CC(TRANSIENT_TUNE) / 33.9f;
+	voice->filterType = delxr_lxr_patch_filter_type(patch);
+	const float cutoff = CC(FILTER_CUTOFF) / 127.f;
+	SVF_directSetFilterValue(&voice->filter, delxr_lxr_filter_frequency(cutoff));
+	SVF_setReso(&voice->filter, CC(FILTER_RESONANCE) / 127.f);
+	SVF_setDrive(&voice->filter, CC(FILTER_DRIVE) / 127.f);
+#undef CC
+}
+
 void delxr_lxr_drum_trigger(DelxrLxrDrum* drum, const DelxrLxrDrumControls* controls) {
+	delxr_lxr_drum_trigger_patch(drum, controls, NULL);
+}
+
+void delxr_lxr_drum_trigger_patch(DelxrLxrDrum* drum, const DelxrLxrDrumControls* controls,
+                                  const DelxrLxrPatch* patch) {
 	if (!drum || !controls) return;
 	Instance* instance = (Instance*)drum;
 	DrumVoice* voice = &instance->voice;
@@ -71,6 +104,7 @@ void delxr_lxr_drum_trigger(DelxrLxrDrum* drum, const DelxrLxrDrumControls* cont
 	SVF_setReso(&voice->filter, 0.f);
 	SVF_setDrive(&voice->filter, 0.316f); /* unity gain into the filter */
 	applyControls(voice, controls);
+	applyPatch(voice, patch);
 
 	/* On the LXR a voice lives forever, so its parameter smoothers are always settled. A voice
 	 * here is new for each note; start the smoothers at their targets so it does not fade in. */
@@ -84,6 +118,11 @@ void delxr_lxr_drum_trigger(DelxrLxrDrum* drum, const DelxrLxrDrumControls* cont
 
 int delxr_lxr_drum_render(DelxrLxrDrum* drum, const DelxrLxrDrumControls* controls, float pitchRatio, int16_t* out,
                           int32_t numSamples) {
+	return delxr_lxr_drum_render_patch(drum, controls, pitchRatio, out, numSamples, NULL);
+}
+
+int delxr_lxr_drum_render_patch(DelxrLxrDrum* drum, const DelxrLxrDrumControls* controls, float pitchRatio,
+                                int16_t* out, int32_t numSamples, const DelxrLxrPatch* patch) {
 	if (!drum || !controls || !out || numSamples <= 0) return 0;
 	pitchRatio = isfinite(pitchRatio) ? fminf(32.f, fmaxf(0.03125f, pitchRatio)) : 1.f;
 	Instance* instance = (Instance*)drum;
@@ -94,6 +133,7 @@ int delxr_lxr_drum_render(DelxrLxrDrum* drum, const DelxrLxrDrumControls* contro
 
 	for (int32_t i = 0; i < numSamples; i++) {
 		if (instance->blockPos >= OUTPUT_DMA_SIZE) {
+			applyPatch(voice, patch);
 			calcDrumVoiceAsync(voice);
 			calcDrumVoiceSyncBlock(voice, instance->block, OUTPUT_DMA_SIZE);
 			instance->blockPos = 0;

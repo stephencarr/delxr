@@ -47,7 +47,7 @@ void transient_trigger(TransientGenerator* transient)
 {
 	if((transient->waveform<=1) || (transient->phase>=2311061504u)) //no sample for snap and offset, no sample data if phase >= sample length
 	{
-		memset((int32_t*)buf,0,size/2*sizeof(int32_t));
+		memset(buf, 0, (size_t)size * sizeof(*buf));
 		return; //snapEg and offset
 	}
 
@@ -60,8 +60,8 @@ void transient_trigger(TransientGenerator* transient)
 		{
 			uint32_t phase = transient->phase;
 			phase = phase >> 20;
-			buf[i] = transient->volume*(transientData[transient->waveform-2][phase]<<8) * (phase < TRANSIENT_SAMPLE_LENGTH);//* transientVolumeTable[phase>>5];
-			transient->phase +=  (transient->pitch*(1<<20)); //2311061504 => 2204<<20
+			buf[i] = transient->volume*((int32_t)transientData[transient->waveform-2][phase] * 256) * (phase < TRANSIENT_SAMPLE_LENGTH);//* transientVolumeTable[phase>>5];
+			transient->phase += (uint32_t)((double)transient->pitch * (1u << 20)); //2311061504 => 2204<<20
 		}
 		else
 		{
@@ -86,7 +86,7 @@ void transient_calc(TransientGenerator* transient)
 	}
 	else
 	{
-		transient->output = transient->volume*(transientData[transient->waveform-1][phase]<<8) * transientVolumeTable[phase>>5];
+		transient->output = transient->volume*((int32_t)transientData[transient->waveform-1][phase] * 256) * transientVolumeTable[phase>>5];
 	}
 
 };

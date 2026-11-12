@@ -27,6 +27,7 @@
 #include "gui/menu_item/colour.h"
 #include "gui/menu_item/submenu.h"
 #include "gui/ui/keyboard/keyboard_screen.h"
+#include "gui/ui/lxr_editor.h"
 #include "gui/ui/load/load_instrument_preset_ui.h"
 #include "gui/ui/load/load_song_ui.h"
 #include "gui/ui/root_ui.h"
@@ -1518,6 +1519,11 @@ static const uint32_t modButtonUIModes[] = {UI_MODE_AUDITIONING,
 
 void View::modButtonAction(uint8_t whichButton, bool on) {
 	RootUI* rootUI = getRootUI();
+	// Shift + the small Volume/Pan page button opens native LXR sound design.
+	// Shift + a gold encoder remains the existing delete-automation gesture.
+	if (on && whichButton == 0 && Buttons::isShiftButtonPressed() && lxrEditor.tryOpen()) {
+		return;
+	}
 
 	// ignore modButtonAction when in the Automation View Automation Editor
 	if ((rootUI == &automationView) && automationView.inAutomationEditor()) {
