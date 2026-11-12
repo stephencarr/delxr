@@ -27,6 +27,8 @@
 #define PITCH_AMOUNT_FACTOR 32
 #define INTERPOLATE_OSC 1
 #define INTERPOLATE_FM_OSC 1
+#define USE_REVERB 0 /* the LXR FX bus is not part of Delxr */
+#define USE_PEAK 0
 
 /* The LXR runs at 44140 Hz; the Deluge at exactly 44100 Hz. */
 #define REAL_FS (float)44100.f
