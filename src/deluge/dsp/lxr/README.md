@@ -18,3 +18,7 @@ Source code from the Erica Synths LXR firmware, used by Delxr's LXR oscillator t
 ## Delxr's wrapper
 
 `delxr_lxr_voice.c/.h` plays one voice from an LXR kit's parameter bytes. It sets each parameter the way the LXR's `MidiParser.c` does when a kit loads, and applies the LXR mixer's per-voice sample-rate reduction. It renders the LXR's native 64-sample blocks whatever block size the Deluge asks for, so envelope timing is the LXR's. Not yet applied: the per-voice LFO and velocity modulation.
+
+## Factory kits from CLATTER
+
+`sdcard/KITS/002`–`009` are the eight factory kits of [CLATTER](https://github.com/clickysteve/clatter) (GPL-3.0-only, commit `f9ddb05b`), another port of the same LXR firmware. CLATTER does not store them as values; it generates each from a fixed seed with its kit generator, starting from this init kit. The values here were produced by running CLATTER's own `buildPreset()` once and copying the resulting LXR parameter bytes into Deluge kit files, one row per LXR voice. Rendered through CLATTER's compiled engine and through this port, every voice without an LFO matches; voices that use the LXR LFO need it ported first.
