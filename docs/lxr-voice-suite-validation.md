@@ -27,8 +27,11 @@ snare 4.528 s, cymbal 13.905 s, closed hat 0.495 s, open hat 5.379 s. Clap repea
 also finish after their repeat phase. These numbers describe selected test
 settings, not universal amplitude-envelope measurements or hardware capacity.
 
-Focused snare and metal tests also passed independently, including the snare's
-noise-only filter branch and the type-specific metallic envelopes.
+The runner also executes the focused snare and metal tests, including the
+snare's noise-only filter branch and type-specific metallic envelopes. All three
+C tests passed in optimized and sanitizer builds. Coverage is of the exposed
+wrapper patches; unexposed original waveform/transient combinations are not a
+promise of complete upstream DSP coverage.
 
 ## Firmware build
 
@@ -48,8 +51,88 @@ DBT_TOOLCHAIN_PATH="$PWD" DELUGE_FW_ROOT="$PWD" \
   --config Release --target deluge -j 4
 ```
 
-The full initial build passed. Final incremental build and emulator measurements
-are being recorded before this branch is handed off.
+The full and final incremental builds passed. Final text/data/BSS sizes are
+1,826,748 / 68,596 / 366,760 bytes; `deluge.bin` is 1,895,436 bytes. The linker
+retains the upstream RWX LOAD-segment warning. No new C/C++ warnings remain in
+the final incremental build.
+
+Tested binary SHA-256: `83f4c63f36bf8b8c477fa85751eedaa565a67b94ddfbfbe51cada8e805b5ebb7`.
+Tested ELF SHA-256: `89741ba47446dd31d5f4935a2fbb367415ab3544766aaaa66778cf1b803e3191`.
+These binaries were built before the implementation commit, so their generated
+version reports the base hash with a dirty marker. DSP/integration source matches
+implementation commit `33485948f`; subsequent fixture/test/documentation changes
+do not change its executable code.
+
+## Emulator integration
+
+All seven final emulator cases passed: full kit, drums, snare, clap, cymbal,
+closed hat and open hat. The full integration harness exercises actual firmware load, sequencing,
+gold-knob editing, save, reload and a second save. It validates all eight engine
+types, separate row parameters, and every note's position, duration, velocity, lift,
+probability, iterance and fill. The starter pattern has row note counts
+`[8, 3, 4, 4, 2, 2, 12, 4]`.
+
+The emulator caught two fixture bugs that static XML checks alone missed:
+Deluge 1.3.0 requires `noteDataWithSplitProb` for these current-version files, and
+the borrowed phase-width decay parameter is unipolar. The final fixture uses
+28-hex-character native note records and positive decay values; the other three
+engine controls use their bipolar ranges. Both cases now have regression guards.
+
+The full mix produced 463,872 stereo frames in each playback window. Before edits,
+peak was 7,773/32,768 and RMS 2,539.21; after edits and reload, peak was 8,753 and
+RMS 2,857.38. Every selected row's four controls changed, and isolated cases
+verified other rows retained their parameters. The complete drum-control vectors
+remain independent; native knob acceleration can legitimately make individual
+values coincide after edits.
+
+| Isolated source | First-window peak, signed 16-bit | First-window RMS |
+| --- | ---: | ---: |
+| Three drums | 7,187 | 1,887.46 |
+| Snare | 3,432 | 379.53 |
+| Clap | 1,522 | 84.02 |
+| Cymbal | 1,012 | 149.13 |
+| Closed hat | 766 | 75.76 |
+| Open hat | 533 | 71.09 |
+
+A separate controlled sequence triggered a sustained open hat followed by a
+silent but active closed-hat row at 127 ms. The matching unchoked control used
+normal mono hat polyphony. Before the closed hit, both captures measured RMS
+396.1. In the 200–320 ms tail window, native choke measured RMS 0.864 versus
+354.33 without choke: over 50 dB suppression to the dither floor. This verifies
+actual sequenced choking, separately from merely saving the `choke` flag. Held
+audition behavior is the existing Deluge exception described in the guide.
+
+The loaded/reloaded song and representative LXR, snare/clap and metal control
+labels were visually reviewed. [OLED evidence](lxr-voice-suite-oled.png) and
+[compact measured results](lxr-voice-suite-results.json) are versioned here.
+Raw captures and firmware-written XML remain locally in `work/voices-final-*`;
+the controlled choke cases are `work/voices-choke-early` and
+`work/voices-choke-early-off`. The full case is
+`work/voices-final-all-verified`; its unedited groove window is frames
+1,084,405–1,548,277 in `audio.wav`.
+
+Reproduce with a source-built DelugEmu v0.5.7 / QEMU 11.0.1, `mtools` and
+`dosfstools` (the harness does not require a desktop):
+
+```sh
+python3 scripts/delxr-voices-smoke.py \
+  --emulator-root /path/to/delugemu \
+  --qemu /path/to/delugemu/qemu/build/qemu-system-arm \
+  --firmware build/Release/deluge.elf --out work/voices-check
+# Add --isolate drum|snare|clap|cymbal|closed-hat|open-hat for isolated checks.
+# Controlled native/off comparison uses the same harness's --choke-probe option:
+# native: --isolate open-hat --choke-probe
+# control: same plus --hat-choke off
+python3 tests/delxr/check_choke_capture.py \
+  work/voices-choke-early work/voices-choke-early-off \
+  --out work/voices-choke-comparison.json
+```
+
+Encoder priming and multiple detents account for the emulator's initial encoder
+state. The load discards priming edits; actual persisted changes are asserted.
+The comparison checker requires an audible matching pretrigger and at least
+20 dB tail suppression; the measured result exceeded that threshold.
+
 
 ## Limits
 

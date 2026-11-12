@@ -1,0 +1,404 @@
+{
+  "base_commit": "91bade1178cf2c8d131047e7e3364eef9d4a319a",
+  "implementation_commit": "33485948f",
+  "firmware_elf_sha256": "89741ba47446dd31d5f4935a2fbb367415ab3544766aaaa66778cf1b803e3191",
+  "firmware_bin_sha256": "83f4c63f36bf8b8c477fa85751eedaa565a67b94ddfbfbe51cada8e805b5ebb7",
+  "emulator": "DelugEmu v0.5.7, QEMU 11.0.1",
+  "host_tests": {
+    "behavioral_checks": 269,
+    "extreme_and_corner_renders": 665,
+    "fixture_tests": 3,
+    "optimized": "passed",
+    "asan_ubsan_float_cast_overflow": "passed"
+  },
+  "cases": {
+    "all": {
+      "isolation": "all",
+      "hat_choke": "native",
+      "choke_probe": false,
+      "firmware_sha256": "89741ba47446dd31d5f4935a2fbb367415ab3544766aaaa66778cf1b803e3191",
+      "passed": [
+        "eight native kit rows and engine types persisted",
+        "independent drum controls and tuning persisted",
+        "both hat polyphony modes persisted",
+        "four left gold encoder controls changed on each selected row",
+        "two-bar sequencer audio before and after reload",
+        "exact note positions/lengths/velocities/lift/probability/iterance/fill persisted",
+        "reloaded controls persisted in second firmware save",
+        "clean QEMU exit"
+      ],
+      "saved_songs": [
+        "DELXR JAM 2.XML",
+        "DELXR JAM 3.XML"
+      ],
+      "note_counts": [
+        8,
+        3,
+        4,
+        4,
+        2,
+        2,
+        12,
+        4
+      ],
+      "audio_windows": [
+        {
+          "start_frame": 1084405,
+          "end_frame": 1548277,
+          "frames": 463872,
+          "peak_s16": 7773,
+          "nonzero_samples": 926569,
+          "rms_s16": 2539.20658731193
+        },
+        {
+          "start_frame": 3900405,
+          "end_frame": 4364277,
+          "frames": 463872,
+          "peak_s16": 8753,
+          "nonzero_samples": 927241,
+          "rms_s16": 2857.380552916262
+        }
+      ],
+      "manual_review": [
+        "Inspect PPM OLED captures for engine/control labels.",
+        "Listen to audio.wav; audio checks do not establish hardware feel or subjective quality."
+      ]
+    },
+    "drum": {
+      "isolation": "drum",
+      "hat_choke": "native",
+      "choke_probe": false,
+      "firmware_sha256": "89741ba47446dd31d5f4935a2fbb367415ab3544766aaaa66778cf1b803e3191",
+      "passed": [
+        "eight native kit rows and engine types persisted",
+        "independent drum controls and tuning persisted",
+        "both hat polyphony modes persisted",
+        "four left gold encoder controls changed on each selected row",
+        "two-bar sequencer audio before and after reload",
+        "exact note positions/lengths/velocities/lift/probability/iterance/fill persisted",
+        "reloaded controls persisted in second firmware save",
+        "clean QEMU exit"
+      ],
+      "saved_songs": [
+        "DELXR JAM 2.XML",
+        "DELXR JAM 3.XML"
+      ],
+      "note_counts": [
+        8,
+        3,
+        4,
+        4,
+        2,
+        2,
+        12,
+        4
+      ],
+      "audio_windows": [
+        {
+          "start_frame": 785397,
+          "end_frame": 1175541,
+          "frames": 390144,
+          "peak_s16": 7187,
+          "nonzero_samples": 686985,
+          "rms_s16": 1887.4550383579237
+        },
+        {
+          "start_frame": 2534389,
+          "end_frame": 2999285,
+          "frames": 464896,
+          "peak_s16": 8261,
+          "nonzero_samples": 929425,
+          "rms_s16": 2669.63755499349
+        }
+      ],
+      "manual_review": [
+        "Inspect PPM OLED captures for engine/control labels.",
+        "Listen to audio.wav; audio checks do not establish hardware feel or subjective quality."
+      ]
+    },
+    "snare": {
+      "isolation": "snare",
+      "hat_choke": "native",
+      "firmware_sha256": "89741ba47446dd31d5f4935a2fbb367415ab3544766aaaa66778cf1b803e3191",
+      "passed": [
+        "eight native kit rows and engine types persisted",
+        "independent drum controls and tuning persisted",
+        "both hat polyphony modes persisted",
+        "four left gold encoder controls changed on each selected row",
+        "two-bar sequencer audio before and after reload",
+        "exact note positions/lengths/velocities/lift/probability/iterance/fill persisted",
+        "reloaded controls persisted in second firmware save",
+        "clean QEMU exit"
+      ],
+      "saved_songs": [
+        "DELXR JAM 2.XML",
+        "DELXR JAM 3.XML"
+      ],
+      "note_counts": [
+        8,
+        3,
+        4,
+        4,
+        2,
+        2,
+        12,
+        4
+      ],
+      "audio_windows": [
+        {
+          "start_frame": 935925,
+          "end_frame": 1399797,
+          "frames": 463872,
+          "peak_s16": 3432,
+          "nonzero_samples": 816888,
+          "rms_s16": 379.5255036743369
+        },
+        {
+          "start_frame": 2445301,
+          "end_frame": 2908149,
+          "frames": 462848,
+          "peak_s16": 3571,
+          "nonzero_samples": 853553,
+          "rms_s16": 414.84162910192515
+        }
+      ],
+      "manual_review": [
+        "Inspect PPM OLED captures for engine/control labels.",
+        "Listen to audio.wav; audio checks do not establish hardware feel or subjective quality."
+      ]
+    },
+    "clap": {
+      "isolation": "clap",
+      "hat_choke": "native",
+      "choke_probe": false,
+      "firmware_sha256": "89741ba47446dd31d5f4935a2fbb367415ab3544766aaaa66778cf1b803e3191",
+      "passed": [
+        "eight native kit rows and engine types persisted",
+        "independent drum controls and tuning persisted",
+        "both hat polyphony modes persisted",
+        "four left gold encoder controls changed on each selected row",
+        "two-bar sequencer audio before and after reload",
+        "exact note positions/lengths/velocities/lift/probability/iterance/fill persisted",
+        "reloaded controls persisted in second firmware save",
+        "clean QEMU exit"
+      ],
+      "saved_songs": [
+        "DELXR JAM 2.XML",
+        "DELXR JAM 3.XML"
+      ],
+      "note_counts": [
+        8,
+        3,
+        4,
+        4,
+        2,
+        2,
+        12,
+        4
+      ],
+      "audio_windows": [
+        {
+          "start_frame": 1090549,
+          "end_frame": 1554421,
+          "frames": 463872,
+          "peak_s16": 1522,
+          "nonzero_samples": 731508,
+          "rms_s16": 84.01932099644488
+        },
+        {
+          "start_frame": 2599925,
+          "end_frame": 3064821,
+          "frames": 464896,
+          "peak_s16": 1558,
+          "nonzero_samples": 752864,
+          "rms_s16": 110.43971594337874
+        }
+      ],
+      "manual_review": [
+        "Inspect PPM OLED captures for engine/control labels.",
+        "Listen to audio.wav; audio checks do not establish hardware feel or subjective quality."
+      ]
+    },
+    "cymbal": {
+      "isolation": "cymbal",
+      "hat_choke": "native",
+      "choke_probe": false,
+      "firmware_sha256": "89741ba47446dd31d5f4935a2fbb367415ab3544766aaaa66778cf1b803e3191",
+      "passed": [
+        "eight native kit rows and engine types persisted",
+        "independent drum controls and tuning persisted",
+        "both hat polyphony modes persisted",
+        "four left gold encoder controls changed on each selected row",
+        "two-bar sequencer audio before and after reload",
+        "exact note positions/lengths/velocities/lift/probability/iterance/fill persisted",
+        "reloaded controls persisted in second firmware save",
+        "clean QEMU exit"
+      ],
+      "saved_songs": [
+        "DELXR JAM 2.XML",
+        "DELXR JAM 3.XML"
+      ],
+      "note_counts": [
+        8,
+        3,
+        4,
+        4,
+        2,
+        2,
+        12,
+        4
+      ],
+      "audio_windows": [
+        {
+          "start_frame": 857077,
+          "end_frame": 1321973,
+          "frames": 464896,
+          "peak_s16": 1012,
+          "nonzero_samples": 804172,
+          "rms_s16": 149.13232283633155
+        },
+        {
+          "start_frame": 2366453,
+          "end_frame": 2831349,
+          "frames": 464896,
+          "peak_s16": 1088,
+          "nonzero_samples": 830569,
+          "rms_s16": 159.7394665987834
+        }
+      ],
+      "manual_review": [
+        "Inspect PPM OLED captures for engine/control labels.",
+        "Listen to audio.wav; audio checks do not establish hardware feel or subjective quality."
+      ]
+    },
+    "closed-hat": {
+      "isolation": "closed-hat",
+      "hat_choke": "native",
+      "choke_probe": false,
+      "firmware_sha256": "89741ba47446dd31d5f4935a2fbb367415ab3544766aaaa66778cf1b803e3191",
+      "passed": [
+        "eight native kit rows and engine types persisted",
+        "independent drum controls and tuning persisted",
+        "both hat polyphony modes persisted",
+        "four left gold encoder controls changed on each selected row",
+        "two-bar sequencer audio before and after reload",
+        "exact note positions/lengths/velocities/lift/probability/iterance/fill persisted",
+        "reloaded controls persisted in second firmware save",
+        "clean QEMU exit"
+      ],
+      "saved_songs": [
+        "DELXR JAM 2.XML",
+        "DELXR JAM 3.XML"
+      ],
+      "note_counts": [
+        8,
+        3,
+        4,
+        4,
+        2,
+        2,
+        12,
+        4
+      ],
+      "audio_windows": [
+        {
+          "start_frame": 946165,
+          "end_frame": 1410037,
+          "frames": 463872,
+          "peak_s16": 766,
+          "nonzero_samples": 774073,
+          "rms_s16": 75.75990357279458
+        },
+        {
+          "start_frame": 2456565,
+          "end_frame": 2919413,
+          "frames": 462848,
+          "peak_s16": 746,
+          "nonzero_samples": 774180,
+          "rms_s16": 73.84083911570569
+        }
+      ],
+      "manual_review": [
+        "Inspect PPM OLED captures for engine/control labels.",
+        "Listen to audio.wav; audio checks do not establish hardware feel or subjective quality."
+      ]
+    },
+    "open-hat": {
+      "isolation": "open-hat",
+      "hat_choke": "native",
+      "firmware_sha256": "89741ba47446dd31d5f4935a2fbb367415ab3544766aaaa66778cf1b803e3191",
+      "passed": [
+        "eight native kit rows and engine types persisted",
+        "independent drum controls and tuning persisted",
+        "both hat polyphony modes persisted",
+        "four left gold encoder controls changed on each selected row",
+        "two-bar sequencer audio before and after reload",
+        "exact note positions/lengths/velocities/lift/probability/iterance/fill persisted",
+        "reloaded controls persisted in second firmware save",
+        "clean QEMU exit"
+      ],
+      "saved_songs": [
+        "DELXR JAM 2.XML",
+        "DELXR JAM 3.XML"
+      ],
+      "note_counts": [
+        8,
+        3,
+        4,
+        4,
+        2,
+        2,
+        12,
+        4
+      ],
+      "audio_windows": [
+        {
+          "start_frame": 932853,
+          "end_frame": 1397749,
+          "frames": 464896,
+          "peak_s16": 533,
+          "nonzero_samples": 748455,
+          "rms_s16": 71.09024049465752
+        },
+        {
+          "start_frame": 2440181,
+          "end_frame": 2902005,
+          "frames": 461824,
+          "peak_s16": 532,
+          "nonzero_samples": 749450,
+          "rms_s16": 73.00548500487133
+        }
+      ],
+      "manual_review": [
+        "Inspect PPM OLED captures for engine/control labels.",
+        "Listen to audio.wav; audio checks do not establish hardware feel or subjective quality."
+      ]
+    }
+  },
+  "choke_comparison": {
+    "native": {
+      "onset_seconds_in_window": 4.13,
+      "pre_trigger_rms_s16": 396.1286968201678,
+      "post_trigger_rms_s16": 0.8636218973353254,
+      "firmware_sha256": "89741ba47446dd31d5f4935a2fbb367415ab3544766aaaa66778cf1b803e3191"
+    },
+    "unchoked": {
+      "onset_seconds_in_window": 4.12,
+      "pre_trigger_rms_s16": 396.0820753241001,
+      "post_trigger_rms_s16": 354.32834244954006,
+      "firmware_sha256": "89741ba47446dd31d5f4935a2fbb367415ab3544766aaaa66778cf1b803e3191"
+    },
+    "tail_reduction_ratio": 354.32834244954006,
+    "tail_window_seconds_after_oh": [
+      0.2,
+      0.32
+    ],
+    "closed_hit_seconds_after_oh": 0.1271186440677966,
+    "passed": "Sequenced closed hat reduces the open-hat tail by more than 20dB using native choke"
+  },
+  "limits": [
+    "No physical hardware tests or hardware CPU measurement",
+    "No subjective sound comparison against an LXR-02",
+    "Four exposed performance controls per oscillator; deeper native parameters and LXR FX/morph remain future work"
+  ]
+}

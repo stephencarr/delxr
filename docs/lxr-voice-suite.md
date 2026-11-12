@@ -48,9 +48,12 @@ the actual parameter name.
 | Cymbal | Decay | FM modulator tuning | FM amount | High-pass cutoff |
 | Closed/open hat | Decay | FM modulator tuning | FM amount | High-pass cutoff |
 
-Other supplied pages keep native volume/pan, filter, delay, reverb and pitch
-controls. The LPF/resonance pair is on the EQ page; pitch is on Custom 1. Select
-and Tempo are not assigned new engine-performance parameters. There is no new
+The other supplied pages provide native volume/pan, filter, delay, reverb and
+pitch controls. Count the small page buttons from the left: button 4 gives LPF
+cutoff (upper) and resonance (lower), button 6 gives delay rate (upper) and amount
+(lower), and button 7 gives pitch on the lower knob. The OLED labels identify the
+assigned functions, which can differ from the printed panel captions. Select and
+Tempo are not assigned new engine-performance parameters. There is no new
 modifier system: hold a note and turn a gold knob for Deluge note automation;
 Shift + gold press deletes automation; Learn + gold press copies it;
 Shift + Learn + gold press pastes it. Shift + audition selects a row silently.

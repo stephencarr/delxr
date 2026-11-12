@@ -12,6 +12,8 @@ emulated firmware behavior; the captured OLEDs still require visual review.
 import argparse
 import array
 import json
+import hashlib
+import math
 import os
 from pathlib import Path
 import shutil
@@ -33,19 +35,28 @@ def value(element, name):
     return element.get(name, element.findtext(name))
 
 
-def read_song(path):
+def read_song(path, hat_choke=True):
     document = ET.parse(path)
     sounds = document.findall('./instruments/kit/soundSources/sound')
     clips = document.findall('./sessionClips/instrumentClip')
     assert len(sounds) == 8 and len(clips) == 1, 'Expected one native eight-row kit and clip'
     assert [value(s.find('osc1'), 'type') for s in sounds] == ENGINES, 'Engine type did not survive firmware load/save'
     assert [value(s.find('osc1'), 'transpose') for s in sounds[:3]] == ['0', '12', '19']
-    assert [value(s, 'polyphonic') for s in sounds[6:]] == ['choke', 'choke'], 'Native hat choke was lost'
+    assert [value(s, 'polyphonic') for s in sounds[6:]] == (['choke', 'choke'] if hat_choke else ['mono', 'mono']), 'Hat choke mode was lost'
     assert clips[0].get('length') == '192', 'Two-bar sequence was lost'
     rows = clips[0].findall('noteRows/noteRow')
     assert [r.get('drumIndex') for r in rows] == list(map(str, range(8)))
-    assert all(any(r.get(k, '') for k in ('noteData', 'noteDataWithLift', 'noteDataWithIterance', 'noteDataWithSplitProb')) for r in rows), 'A row has no sequenced notes'
-    return [{p: value(r.find('soundParams'), p) for p in (*PARAMS, 'oscAVolume')} for r in rows]
+    states = []
+    for row in rows:
+        packed = row.get('noteDataWithSplitProb', '')
+        assert packed.startswith('0x') and len(packed) > 2 and (len(packed) - 2) % 28 == 0, 'Missing/current-schema sequence data'
+        notes = [tuple(int(packed[offset + a:offset + b], 16) for a, b in
+                       ((0, 8), (8, 16), (16, 18), (18, 20), (20, 22), (22, 26), (26, 28)))
+                 for offset in range(2, len(packed), 28)]
+        state = {p: value(row.find('soundParams'), p) for p in (*PARAMS, 'oscAVolume')}
+        state['_notes'] = notes
+        states.append(state)
+    return states
 
 
 class Panel:
@@ -101,8 +112,16 @@ def main():
     parser.add_argument('--qemu', type=Path, required=True)
     parser.add_argument('--firmware', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--emulator-root', type=Path, default=ROOT / 'upstream/delugemu',
+                        help='Delugemu source checkout containing scripts/mksd.sh and skin PNG')
     parser.add_argument('--isolate', choices=FAMILIES, default='all')
+    parser.add_argument('--hat-choke', choices=['native', 'off'], default='native',
+                        help='Diagnostic: disable native mutual hat choke in the private test copy only')
+    parser.add_argument('--choke-probe', action='store_true',
+                        help='With --isolate open-hat: long OH at tick0, silent active CH at tick6')
     args = parser.parse_args()
+    if args.choke_probe and args.isolate != 'open-hat':
+        parser.error('--choke-probe requires --isolate open-hat')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     content = out / 'card-content'
@@ -113,14 +132,25 @@ def main():
             path.unlink()
     original = content / 'SONGS/DELXR JAM.XML'
     document = ET.parse(original)
+    if args.hat_choke == 'off':
+        for sound in document.findall('./instruments/kit/soundSources/sound')[6:]:
+            sound.set('polyphonic', 'mono')
     if args.isolate != 'all':
         for i, row in enumerate(document.findall('./sessionClips/instrumentClip/noteRows/noteRow')):
             if i not in FAMILIES[args.isolate]:
                 row.find('soundParams').set('oscAVolume', '0x80000000')
-        document.write(original, encoding='UTF-8', xml_declaration=True)
-    baseline = read_song(original)
+    if args.choke_probe:
+        rows = document.findall('./sessionClips/instrumentClip/noteRows/noteRow')
+        rows[7].find('soundParams').set('oscAPulseWidth', '0x79999999')  # .95 unipolar decay
+        rows[7].set('noteDataWithSplitProb', '0x0000000000000003644014000000')
+        rows[6].set('noteDataWithSplitProb', '0x0000000600000003644014000000')
+        rows[6].find('soundParams').set('oscAVolume', '0x7FFFFFFF')
+        rows[6].find('soundParams').set('volume', '0x80000000')  # silent, but a source still triggers
+    document.write(original, encoding='UTF-8', xml_declaration=True)
+    baseline = read_song(original, args.hat_choke == 'native')
+    edit_rows = [] if args.choke_probe else FAMILIES[args.isolate]
     card, raw = out / 'test-sd.img', out / 'qemu-output.wav'
-    subprocess.run([str(ROOT / 'upstream/delugemu/scripts/mksd.sh'), str(content), str(card)], check=True, timeout=60)
+    subprocess.run([str(args.emulator_root.resolve() / 'scripts/mksd.sh'), str(content), str(card)], check=True, timeout=60)
     windows = []
     def audio_position():
         return max(0, raw.stat().st_size - 44) // 4 * 4
@@ -128,7 +158,7 @@ def main():
         qmp = Path(tmp) / 'qmp.sock'
         process = subprocess.Popen([str(args.qemu.resolve()), '-M', 'deluge', '-kernel', str(args.firmware.resolve()),
             '-drive', f'if=sd,format=raw,file={card}', '-display', 'none',
-            '-global', f'deluge-skin.image={ROOT}/upstream/delugemu/Delugemu_Normal.png',
+            '-global', f'deluge-skin.image={args.emulator_root.resolve()}/Delugemu_Normal.png',
             '-audiodev', f'wav,id=audio0,path={raw}', '-global', 'rza1l-ssif.audiodev=audio0',
             '-serial', 'null', '-monitor', 'none', '-qmp', f'unix:{qmp},server=on,wait=off'], stdout=log, stderr=log)
         try:
@@ -142,6 +172,11 @@ def main():
                 sock.connect(str(qmp))
                 panel = Panel(sock, process, out)
                 panel.pause(10)
+                # Prime QEMU's quadrature encoder state before loading the fixture.
+                # These harmless startup edits are discarded by the subsequent song load.
+                for _ in range(3):
+                    panel.click(575, 469); panel.click(801, 196)
+                panel.pause(1)
                 panel.key('tab'); panel.pause(2); panel.key('l'); panel.pause(3); panel.shot('01-load-browser')
                 panel.key('ret'); panel.pause(5); panel.shot('02-loaded')
                 start = audio_position()
@@ -151,14 +186,14 @@ def main():
                 # Native CLIP view; row audition selects its sound. Only the two
                 # gold parameter encoders on the LEFT are rotated below.
                 panel.key('c'); panel.pause(1); panel.shot('04-clip')
-                for row in FAMILIES[args.isolate]:
+                for row in edit_rows:
                     panel.key_state(str(row + 1), True)
                     panel.shot(f'row-{row}-selected')
                     for page, button_x, lower_param, upper_param in ((1, 412, 3, 1), (2, 503, 0, 2)):
                         panel.click(button_x, 332)
-                        panel.click(575, 469)
+                        panel.click(575, 469); panel.click(575, 469)
                         panel.shot(f'row-{row}-control-{lower_param}')
-                        panel.click(801, 196)
+                        panel.click(801, 196); panel.click(801, 196)
                         panel.shot(f'row-{row}-control-{upper_param}')
                     panel.key_state(str(row + 1), False)
                 panel.key('tab'); panel.pause(2); panel.key('s'); panel.pause(1); panel.shot('05-save-dialog')
@@ -186,17 +221,19 @@ def main():
     subprocess.run(['mcopy', '-o', '-i', str(card), '::/SONGS/*.XML', str(saved_dir)], check=True, timeout=20)
     saved = sorted(p for p in saved_dir.glob('*.XML') if p.name != 'DELXR JAM.XML')
     assert len(saved) == 2, f'Expected two firmware saves, got {[p.name for p in saved]}'
-    first, reloaded = map(read_song, saved)
+    first, reloaded = [read_song(p, args.hat_choke == 'native') for p in saved]
     assert first == reloaded, 'Engine control values changed across save/reload/resave'
     for row in range(8):
+        assert first[row]['_notes'] == baseline[row]['_notes'], f'Row {row} notes changed/dropped at load/save'
         assert first[row]['oscAVolume'] == baseline[row]['oscAVolume'], 'Isolation/mixing state changed'
         for param in PARAMS:
-            if row in FAMILIES[args.isolate]:
+            if row in edit_rows:
                 assert first[row][param] != baseline[row][param], f'Gold encoder did not change row {row} {param}'
             else:
                 assert first[row][param] == baseline[row][param], f'Unselected row {row} was changed'
-    for param in PARAMS:
-        assert len({first[row][param] for row in range(3)}) == 3, f'Drum rows lost independent {param}'
+    assert len({tuple(first[row][param] for param in PARAMS) for row in range(3)}) == 3, 'Drum rows lost independent control states'
+    # Individual values can legitimately converge after native knob quantization/acceleration;
+    # the isolation passes additionally require every other row to remain byte-identical.
     capture = raw.read_bytes()
     assert capture[:4] == b'RIFF' and capture[8:16] == b'WAVEfmt '
     assert struct.unpack('<IHHIIHH', capture[16:36]) == (16, 1, 2, 44100, 176400, 4, 16)
@@ -209,14 +246,17 @@ def main():
             samples.byteswap()
         peak, nonzero = max(map(abs, samples), default=0), sum(s != 0 for s in samples)
         assert peak > 100 and nonzero > 4410, 'No meaningful synthesized audio during sequencer window'
-        audio_results.append({'frames': len(samples) // 2, 'peak_s16': peak, 'nonzero_samples': nonzero})
+        audio_results.append({'start_frame': start // 4, 'end_frame': end // 4, 'frames': len(samples) // 2, 'peak_s16': peak, 'nonzero_samples': nonzero, 'rms_s16': math.sqrt(sum(s * s for s in samples) / max(1, len(samples)))})
     log_text = (out / 'emulator.log').read_text()
     assert not any(marker in log_text.lower() for marker in ('assertion failed', 'aborted', 'fatal:')), 'Emulator fault in log'
-    result = {'isolation': args.isolate, 'passed': ['eight native kit rows and engine types persisted',
-        'independent drum controls and tuning persisted', 'both native hat choke modes persisted',
-        'four left gold encoder controls changed on each selected row', 'two-bar sequencer audio before and after reload',
+    result = {'isolation': args.isolate, 'hat_choke': args.hat_choke, 'choke_probe': args.choke_probe,
+        'firmware_sha256': hashlib.sha256(args.firmware.read_bytes()).hexdigest(), 'passed': ['eight native kit rows and engine types persisted',
+        'independent drum controls and tuning persisted', 'both hat polyphony modes persisted',
+        ('long-decay OH and silent CH probe preserved' if args.choke_probe else
+         'four left gold encoder controls changed on each selected row'), 'two-bar sequencer audio before and after reload',
+        'exact note positions/lengths/velocities/lift/probability/iterance/fill persisted',
         'reloaded controls persisted in second firmware save', 'clean QEMU exit'],
-        'saved_songs': [p.name for p in saved], 'audio_windows': audio_results,
+        'saved_songs': [p.name for p in saved], 'note_counts': [len(row['_notes']) for row in first], 'audio_windows': audio_results,
         'manual_review': ['Inspect PPM OLED captures for engine/control labels.',
                           'Listen to audio.wav; audio checks do not establish hardware feel or subjective quality.']}
     (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')

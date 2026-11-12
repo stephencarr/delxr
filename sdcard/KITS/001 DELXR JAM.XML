@@ -89,7 +89,7 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0xF5C28F5C</oscAPulseWidth>
+				<oscAPulseWidth>0x3AE147AE</oscAPulseWidth>
 				<oscAWavetablePosition>0xCF5C28F5</oscAWavetablePosition>
 				<carrier1Feedback>0xD1EB851E</carrier1Feedback>
 				<modulator1Feedback>0x8F5C28F6</modulator1Feedback>
@@ -253,7 +253,7 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0xD47AE147</oscAPulseWidth>
+				<oscAPulseWidth>0x2A3D70A4</oscAPulseWidth>
 				<oscAWavetablePosition>0xB851EB85</oscAWavetablePosition>
 				<carrier1Feedback>0xE8F5C28F</carrier1Feedback>
 				<modulator1Feedback>0x9999999A</modulator1Feedback>
@@ -417,7 +417,7 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0xBD70A3D7</oscAPulseWidth>
+				<oscAPulseWidth>0x1EB851EB</oscAPulseWidth>
 				<oscAWavetablePosition>0xA147AE14</oscAWavetablePosition>
 				<carrier1Feedback>0xC51EB852</carrier1Feedback>
 				<modulator1Feedback>0x8A3D70A4</modulator1Feedback>
@@ -581,7 +581,7 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0xE6666666</oscAPulseWidth>
+				<oscAPulseWidth>0x33333333</oscAPulseWidth>
 				<oscAWavetablePosition>0x19999999</oscAWavetablePosition>
 				<carrier1Feedback>0x33333332</carrier1Feedback>
 				<modulator1Feedback>0x80000000</modulator1Feedback>
@@ -745,7 +745,7 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0xC28F5C29</oscAPulseWidth>
+				<oscAPulseWidth>0x2147AE14</oscAPulseWidth>
 				<oscAWavetablePosition>0xFAE147AE</oscAWavetablePosition>
 				<carrier1Feedback>0x7851EB84</carrier1Feedback>
 				<modulator1Feedback>0x26666666</modulator1Feedback>
@@ -909,7 +909,7 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0xE147AE14</oscAPulseWidth>
+				<oscAPulseWidth>0x30A3D70A</oscAPulseWidth>
 				<oscAWavetablePosition>0x19999999</oscAWavetablePosition>
 				<carrier1Feedback>0x00000000</carrier1Feedback>
 				<modulator1Feedback>0x19999999</modulator1Feedback>
@@ -1073,7 +1073,7 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0xCCCCCCCC</oscAPulseWidth>
+				<oscAPulseWidth>0x26666666</oscAPulseWidth>
 				<oscAWavetablePosition>0x19999999</oscAWavetablePosition>
 				<carrier1Feedback>0x00000000</carrier1Feedback>
 				<modulator1Feedback>0x19999999</modulator1Feedback>
@@ -1237,7 +1237,7 @@
 				<portamento>0x80000000</portamento>
 				<compressorShape>0xDC28F5B2</compressorShape>
 				<oscAVolume>0x7FFFFFFF</oscAVolume>
-				<oscAPulseWidth>0xE147AE14</oscAPulseWidth>
+				<oscAPulseWidth>0x30A3D70A</oscAPulseWidth>
 				<oscAWavetablePosition>0x19999999</oscAWavetablePosition>
 				<carrier1Feedback>0x00000000</carrier1Feedback>
 				<modulator1Feedback>0x19999999</modulator1Feedback>

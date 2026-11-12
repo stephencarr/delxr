@@ -14,6 +14,8 @@ fi
 if [[ "${SANITIZE:-0}" == 1 ]]; then
   flags+=(-O1 -fno-omit-frame-pointer -fsanitize=address,undefined,float-cast-overflow -fno-sanitize-recover=all)
 fi
-"${CC:-cc}" "${flags[@]}" -Isrc/deluge/dsp/lxr \
-  tests/delxr/lxr_voices_test.c src/deluge/dsp/lxr/*.c -lm -o "$build_dir/lxr_voices_test"
-"$build_dir/lxr_voices_test"
+for test in lxr_voices_test lxr_snare_test lxr_metal_test; do
+  "${CC:-cc}" "${flags[@]}" -Isrc/deluge/dsp/lxr \
+    "tests/delxr/$test.c" src/deluge/dsp/lxr/*.c -lm -o "$build_dir/$test"
+  "$build_dir/$test"
+done

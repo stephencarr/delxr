@@ -36,20 +36,26 @@ class JamFixtureTest(unittest.TestCase):
         rows = clip.findall('noteRows/noteRow')
         self.assertEqual([r.get('drumIndex') for r in rows], list(map(str, range(8))))
         for index, row in enumerate(rows):
-            packed = row.get('noteDataWithLift')[2:]
+            packed = row.get('noteDataWithSplitProb')[2:]
             self.assertTrue(packed)
-            self.assertEqual(len(packed) % 22, 0)
+            self.assertEqual(len(packed) % 28, 0)
+            self.assertEqual(len(packed) // 28, [8, 3, 4, 4, 2, 2, 12, 4][index])
             positions = []
-            for offset in range(0, len(packed), 22):
-                note = packed[offset:offset + 22]
+            for offset in range(0, len(packed), 28):
+                note = packed[offset:offset + 28]
                 position, duration, velocity = int(note[:8], 16), int(note[8:16], 16), int(note[16:18], 16)
                 self.assertLess(position, 192)
                 self.assertGreater(duration, 0)
                 self.assertGreater(velocity, 0)
                 self.assertLessEqual(velocity, 127)
+                self.assertEqual(note[18:], '4014000000')
                 positions.append(position)
             self.assertEqual(positions, sorted(set(positions)))
             kit_params = self.kit.findall('soundSources/sound')[index].find('defaultParams')
+            self.assertGreater(int(kit_params.findtext('oscAPulseWidth'), 16), 0)
+            self.assertLess(int(kit_params.findtext('oscAPulseWidth'), 16), 0x80000000)
+            self.assertAlmostEqual(int(kit_params.findtext('oscAPulseWidth'), 16) / 2147483647,
+                                   [.46, .33, .24, .40, .26, .38, .30, .38][index], places=7)
             for param in CONTROL_PARAMS:
                 self.assertEqual(row.find('soundParams').get(param), kit_params.findtext(param))
         for param in CONTROL_PARAMS:
