@@ -2450,7 +2450,7 @@ dontUseCache: {}
 
 		}
 		else if (sound.sources[s].oscType == OscType::DELXR_KICK
-		         || sound.sources[s].oscType == OscType::DELXR_LXR_DRUM) {
+		         || sound.sources[s].oscType == OscType::DELXR_LXR) {
 			static int32_t engineBuffer[SSI_TX_BUFFER_NUM_SAMPLES] __attribute__((aligned(CACHE_LINE_SIZE)));
 			// A Delxr engine's four controls ride on sound parameters that its oscillator otherwise leaves
 			// unused: pulse width, wavetable position, and the two FM feedbacks. See delxrControlName().
@@ -2472,20 +2472,19 @@ dontUseCache: {}
 				                                    numSamples, phaseIncrement);
 			}
 			else {
-				delxr::LxrDrumVoice* lxrDrum = unisonParts[u].sources[s].lxrDrum;
-				if (lxrDrum == nullptr) {
+				delxr::LxrVoice* lxrVoice = unisonParts[u].sources[s].lxrVoice;
+				delxr::LxrPatch* lxrPatch = sound.sources[s].lxrPatch;
+				if (lxrVoice == nullptr || lxrPatch == nullptr) {
 					goto instantUnassign;
 				}
-				DelxrLxrDrumControls controls{
-				    .decay = control[0], .pitchAmount = control[1], .pitchDecay = control[2], .drive = control[3]};
-				if (lxrDrum->needsTrigger) {
-					delxr_lxr_drum_trigger(&lxrDrum->drum, &controls);
-					lxrDrum->needsTrigger = false;
+				if (lxrVoice->needsTrigger) {
+					delxr_lxr_voice_trigger(&lxrVoice->voice, lxrPatch->engine, lxrPatch->kit, lxrVoice->velocity);
+					lxrVoice->needsTrigger = false;
 				}
 				// A kit row plays middle C, whose phase increment is 25479976; that plays the patch as tuned.
 				static int16_t lxrBuffer[SSI_TX_BUFFER_NUM_SAMPLES];
-				stillSounding = delxr_lxr_drum_render(&lxrDrum->drum, &controls, phaseIncrement / 25479976.0f,
-				                                      lxrBuffer, numSamples);
+				stillSounding = delxr_lxr_voice_render(&lxrVoice->voice, phaseIncrement / 25479976.0f, lxrBuffer,
+				                                       numSamples);
 				for (int32_t i = 0; i < numSamples; i++) {
 					engineBuffer[i] = lxrBuffer[i] << 16;
 				}

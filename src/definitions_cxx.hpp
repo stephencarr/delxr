@@ -366,7 +366,7 @@ enum class OscType : uint8_t {
 	SAMPLE,
 	DX7,
 	DELXR_KICK,
-	DELXR_LXR_DRUM,
+	DELXR_LXR,
 	INPUT_L,
 	INPUT_R,
 	INPUT_STEREO,

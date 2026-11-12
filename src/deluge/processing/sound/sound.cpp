@@ -17,6 +17,7 @@
 
 #include "processing/sound/sound.h"
 #include "definitions_cxx.hpp"
+#include "dsp/delxr/lxr_voice.h"
 #include "dsp/dx/engine.h"
 #include "gui/l10n/l10n.h"
 #include "gui/ui/root_ui.h"
@@ -1954,7 +1955,7 @@ bool Sound::allowNoteTails(ModelStackWithSoundFlags* modelStack, bool disregardS
 		anyActiveSources = sourceEverActive || anyActiveSources;
 
 		if (sourceEverActive && sources[s].oscType != OscType::DELXR_KICK
-		    && sources[s].oscType != OscType::DELXR_LXR_DRUM
+		    && sources[s].oscType != OscType::DELXR_LXR
 		    && (sources[s].oscType != OscType::SAMPLE || sources[s].repeatMode != SampleRepeatMode::ONCE
 		        || (!disregardSampleLoop && sources[s].hasAnyLoopEndPoint()))) {
 			return true;
@@ -3404,6 +3405,22 @@ Error Sound::readSourceFromFile(Deserializer& reader, int32_t s, ParamManagerFor
 			int len = reader.readTagOrAttributeValueHexBytes(patch->params, 156);
 			reader.exitTag("dx7patch");
 		}
+		else if (!strcmp(tagName, "lxrEngine")) {
+			delxr::LxrPatch* patch = source->ensureLxrPatch();
+			if (patch == nullptr) {
+				return Error::INSUFFICIENT_RAM;
+			}
+			patch->engine = delxr::stringToLxrEngine(reader.readTagOrAttributeValue());
+			reader.exitTag("lxrEngine");
+		}
+		else if (!strcmp(tagName, "lxrKit")) {
+			delxr::LxrPatch* patch = source->ensureLxrPatch();
+			if (patch == nullptr) {
+				return Error::INSUFFICIENT_RAM;
+			}
+			reader.readTagOrAttributeValueHexBytes(patch->kit, DELXR_LXR_KIT_BYTES);
+			reader.exitTag("lxrKit");
+		}
 		else if (!strcmp(tagName, "dx7randomdetune")) {
 			DxPatch* patch = source->ensureDxPatch();
 			if (patch == nullptr) {
@@ -3765,6 +3782,13 @@ void Sound::writeSourceToFile(Serializer& writer, int32_t s, char const* tagName
 				if (patch->random_detune != 0) {
 					writer.writeAttribute("dx7randomdetune", patch->random_detune);
 				}
+			}
+			goto justCloseTag;
+		}
+		else if (source->oscType == OscType::DELXR_LXR && synthMode != SynthMode::FM) {
+			if (source->lxrPatch) {
+				writer.writeAttribute("lxrEngine", delxr::lxrEngineToString(source->lxrPatch->engine));
+				writer.writeAttributeHexBytes("lxrKit", source->lxrPatch->kit, DELXR_LXR_KIT_BYTES);
 			}
 			goto justCloseTag;
 		}

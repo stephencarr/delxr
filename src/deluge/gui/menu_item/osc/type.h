@@ -60,7 +60,7 @@ public:
 		    OscType::SAMPLE,
 		    OscType::DX7,
 		    OscType::DELXR_KICK,
-		    OscType::DELXR_LXR_DRUM,
+		    OscType::DELXR_LXR,
 
 		    // Haven't actually really determined if this needs to be here - maybe not?
 		    OscType::WAVETABLE,
@@ -103,7 +103,7 @@ public:
 		}
 
 		options.emplace_back("Kick");     // Delxr kick engine
-		options.emplace_back("LXR drum"); // drum voice from the LXR firmware
+		options.emplace_back("LXR"); // a voice from the LXR firmware
 
 		if (AudioEngine::micPluggedIn || AudioEngine::lineInPluggedIn) {
 			options.emplace_back(l10n::getView(STRING_FOR_INPUT_LEFT));
@@ -135,7 +135,7 @@ public:
 		oled_canvas::Canvas& image = OLED::main;
 
 		const OscType osc_type = soundEditor.currentSound->sources[sourceId_].oscType;
-		if (osc_type == OscType::DX7 || osc_type == OscType::DELXR_KICK || osc_type == OscType::DELXR_LXR_DRUM) {
+		if (osc_type == OscType::DX7 || osc_type == OscType::DELXR_KICK || osc_type == OscType::DELXR_LXR) {
 			const auto option = getOptions(OptType::FULL)[getValue()].data();
 			return image.drawStringCentered(option, slot.start_x, slot.start_y + kHorizontalMenuSlotYOffset + 5,
 			                                kTextTitleSpacingX, kTextTitleSizeY, slot.width);

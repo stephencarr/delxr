@@ -17,6 +17,7 @@
 
 #include "processing/source.h"
 #include "definitions_cxx.hpp"
+#include "dsp/delxr/lxr_voice.h"
 #include "dsp/dx/engine.h"
 #include "gui/ui/browser/sample_browser.h"
 #include "gui/ui/sound_editor.h"
@@ -54,6 +55,8 @@ Source::~Source() {
 		delugeDealloc(dxPatch);
 		dxPatch = nullptr;
 	}
+	delxr::deleteLxrPatch(lxrPatch);
+	lxrPatch = nullptr;
 	destructAllMultiRanges();
 }
 
@@ -297,6 +300,16 @@ doChangeType:
 	if (oscType == OscType::DX7) {
 		ensureDxPatch();
 	}
+	else if (oscType == OscType::DELXR_LXR) {
+		ensureLxrPatch();
+	}
+}
+
+delxr::LxrPatch* Source::ensureLxrPatch() {
+	if (lxrPatch == nullptr) {
+		lxrPatch = delxr::newLxrPatch();
+	}
+	return lxrPatch;
 }
 
 DxPatch* Source::ensureDxPatch() {

@@ -27,6 +27,9 @@ class ParamManagerForTimeline;
 class WaveTable;
 class SampleHolder;
 class DxPatch;
+namespace delxr {
+struct LxrPatch;
+}
 
 class Source {
 public:
@@ -45,6 +48,7 @@ public:
 	MultiRangeArray ranges;
 
 	DxPatch* dxPatch;
+	delxr::LxrPatch* lxrPatch = nullptr;
 	bool dxPatchChanged = false;
 	SampleRepeatMode repeatMode;
 
@@ -69,6 +73,7 @@ public:
 	void setOscType(OscType newType);
 
 	DxPatch* ensureDxPatch();
+	delxr::LxrPatch* ensureLxrPatch();
 
 private:
 	void destructAllMultiRanges();

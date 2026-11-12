@@ -87,14 +87,18 @@ bool VoiceUnisonPartSource::noteOn(Voice* voice, Source* source, VoiceSamplePlay
 	else if (synthMode != SynthMode::FM && source->oscType == OscType::DELXR_KICK) {
 		delxrKick.trigger();
 	}
-	else if (synthMode != SynthMode::FM && source->oscType == OscType::DELXR_LXR_DRUM) {
-		if (lxrDrum == nullptr) { // We might already have one, and just be restarting this voice
-			lxrDrum = delxr::acquireLxrDrumVoice();
-			if (lxrDrum == nullptr) {
+	else if (synthMode != SynthMode::FM && source->oscType == OscType::DELXR_LXR) {
+		if (source->ensureLxrPatch() == nullptr) {
+			return false;
+		}
+		if (lxrVoice == nullptr) { // We might already have one, and just be restarting this voice
+			lxrVoice = delxr::acquireLxrVoice();
+			if (lxrVoice == nullptr) {
 				return false;
 			}
 		}
-		lxrDrum->needsTrigger = true; // triggered at the next render, once the controls are known
+		lxrVoice->needsTrigger = true; // triggered at the next render
+		lxrVoice->velocity = velocity;
 	}
 	else {
 		if (oscRetriggerPhase != 0xFFFFFFFF) {
@@ -122,9 +126,9 @@ void VoiceUnisonPartSource::unassign(bool deletingSong) {
 		dxVoice = nullptr;
 	}
 
-	if (lxrDrum != nullptr) {
-		delxr::releaseLxrDrumVoice(lxrDrum);
-		lxrDrum = nullptr;
+	if (lxrVoice != nullptr) {
+		delxr::releaseLxrVoice(lxrVoice);
+		lxrVoice = nullptr;
 	}
 
 	if (livePitchShifter != nullptr) {

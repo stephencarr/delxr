@@ -114,15 +114,11 @@ void getPatchCableFromShortcut(int32_t xDisplay, int32_t yDisplay, ParamDescript
 /// Returns their name, or nullptr if this param is not acting as an engine control.
 static char const* delxrControlName(int32_t p, ModControllableAudio* modControllable) {
 	static char const* const controlNames[4] = {"Kick decay", "Kick sweep", "Sweep time", "Kick drive"};
-	static char const* const lxrNames[4] = {"LXR decay", "LXR pitch amt", "LXR pitch dec", "LXR drive"};
 	auto* sound = static_cast<Sound*>(modControllable);
 	for (int32_t s = 0; s < kNumSources; s++) {
 		char const* const* names = nullptr;
 		if (sound->sources[s].oscType == OscType::DELXR_KICK) {
 			names = controlNames;
-		}
-		else if (sound->sources[s].oscType == OscType::DELXR_LXR_DRUM) {
-			names = lxrNames;
 		}
 		else {
 			continue;

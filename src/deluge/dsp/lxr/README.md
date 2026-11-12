@@ -1,18 +1,20 @@
-# LXR drum voice
+# LXR voices
 
-Source code from the Erica Synths LXR firmware, used by Delxr's LXR drum oscillator.
+Source code from the Erica Synths LXR firmware, used by Delxr's LXR oscillator type.
 
-- Origin: https://github.com/erica-synths/lxr-desktop-app, commit `a43cd4fcda23ec3d577dc425261c3eb28bd5abff` (2026-10-23), from `Core/Inc/Soundengine/` and `Core/Src/Soundengine/`.
+- Origin: https://github.com/erica-synths/lxr-desktop-app, commit `a43cd4fcda23ec3d577dc425261c3eb28bd5abff` (2026-10-23), from `Core/Inc/` and `Core/Src/`.
 - Licence: GPL-3.0-only with additional terms. `NOTICE.md` here is the LXR firmware's notice, unchanged. The names "Erica Synths", "LXR" and "LXR-02" are trademarks of Erica Synths; Delxr is not affiliated with or approved by Erica Synths.
-- Brought in on 2026-11-11.
 
-## What is unchanged
+## Unchanged apart from include paths
 
-Apart from include paths: `1PoleLp`, `Decay`, `SlopeEg2`, `snapEg`, `distortion`, `transientGenerator`, `transientTables`, `wavetable`, `ResonantFilter`, `MidiNoteNumbers.h`, and `Oscillator` (one unused function disabled).
+`1PoleLp`, `Decay`, `SlopeEg2`, `snapEg`, `distortion`, `transientGenerator`, `transientTables`, `wavetable`, `ResonantFilter`, `MidiNoteNumbers.h`, `valueShaper.h`, `Parameters.h` (the LXR's parameter list), `InitKit.h` and `initKit.c` (the LXR's built-in init kit), and `Oscillator` (one unused function disabled).
 
-## What is changed or new
+## Changed
 
-- `DrumVoice.c/.h`: every function takes a pointer to one voice instead of an index into the LXR's global array of three. LFO, pan, velocity nodes, fader and dither removed; the Deluge has its own. The signal path is the LXR's.
-- `BufferTools.h`: only the three helpers the voice uses.
-- `config.h`, `lxr_port.h/.c`: replace the STM32 and LXR firmware services the DSP code expects. Sample rate is 44100 Hz (the LXR runs at 44140 Hz).
-- `delxr_lxr_drum.c/.h`: Delxr's wrapper. It sets up a kick patch, maps four controls using the LXR's own parameter scaling, and feeds the engine its native 64-sample blocks.
+- `DrumVoice`, `Snare`, `CymbalVoice`, `HiHat`: every function takes a pointer to one voice instead of using the LXR's global voices, so any number of independent voices can exist. The LFO member, panning, velocity modulation nodes, panel fader and dither are removed. The signal path is the LXR's.
+- `BufferTools.h`: only the helpers the voices use; the saturating add works per sample instead of on packed pairs.
+- `config.h`, `lxr_port.h/.c`: stand-ins for the STM32 and LXR firmware services the code expects. Sample rate is 44100 Hz (the LXR runs at 44140 Hz).
+
+## Delxr's wrapper
+
+`delxr_lxr_voice.c/.h` plays one voice from an LXR kit's parameter bytes. It sets each parameter the way the LXR's `MidiParser.c` does when a kit loads, and applies the LXR mixer's per-voice sample-rate reduction. It renders the LXR's native 64-sample blocks whatever block size the Deluge asks for, so envelope timing is the LXR's. Not yet applied: the per-voice LFO and velocity modulation.
