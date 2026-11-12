@@ -27,20 +27,26 @@ typedef struct {
 _Static_assert(sizeof(Instance) <= sizeof(DelxrLxrDrum), "raise DELXR_LXR_DRUM_BYTES");
 
 static uint8_t toMidiValue(float value, float max) {
+	if (!isfinite(value)) value = 0.f;
 	const float scaled = value * max;
 	return scaled <= 0.f ? 0 : (scaled >= max ? (uint8_t)max : (uint8_t)scaled);
 }
 
 /* The LXR's parameter scaling, as its MidiParser.c applies it to incoming control values. */
 static void applyControls(DrumVoice* voice, const DelxrLxrDrumControls* controls) {
+	const float pitchAmount = isfinite(controls->pitchAmount)
+	    ? fminf(1.f, fmaxf(0.f, controls->pitchAmount)) : 0.f;
+	const float drive = isfinite(controls->drive)
+	    ? fminf(1.f, fmaxf(0.f, controls->drive)) : 0.f;
 	/* 120 of 127 keeps the longest decay to about 25 seconds; at 127 the LXR envelope never ends */
 	slopeEg2_setDecay(&voice->oscVolEg, toMidiValue(controls->decay, 120.f), AMP_EG_SYNC);
-	voice->egPitchModAmount = controls->pitchAmount * controls->pitchAmount * PITCH_AMOUNT_FACTOR;
+	voice->egPitchModAmount = pitchAmount * pitchAmount * PITCH_AMOUNT_FACTOR;
 	DecayEg_setDecay(&voice->oscPitchEg, toMidiValue(controls->pitchDecay, 127.f));
-	setDistortionShape(&voice->distortion, controls->drive < 0.f ? 0.f : (controls->drive > 1.f ? 1.f : controls->drive));
+	setDistortionShape(&voice->distortion, drive);
 }
 
 void delxr_lxr_drum_trigger(DelxrLxrDrum* drum, const DelxrLxrDrumControls* controls) {
+	if (!drum || !controls) return;
 	Instance* instance = (Instance*)drum;
 	DrumVoice* voice = &instance->voice;
 	initDrumVoice(voice);
@@ -78,6 +84,8 @@ void delxr_lxr_drum_trigger(DelxrLxrDrum* drum, const DelxrLxrDrumControls* cont
 
 int delxr_lxr_drum_render(DelxrLxrDrum* drum, const DelxrLxrDrumControls* controls, float pitchRatio, int16_t* out,
                           int32_t numSamples) {
+	if (!drum || !controls || !out || numSamples <= 0) return 0;
+	pitchRatio = isfinite(pitchRatio) ? fminf(32.f, fmaxf(0.03125f, pitchRatio)) : 1.f;
 	Instance* instance = (Instance*)drum;
 	DrumVoice* voice = &instance->voice;
 	applyControls(voice, controls);

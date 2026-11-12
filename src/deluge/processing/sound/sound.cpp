@@ -17,6 +17,7 @@
 
 #include "processing/sound/sound.h"
 #include "definitions_cxx.hpp"
+#include "dsp/delxr/oscillator_type.h"
 #include "dsp/dx/engine.h"
 #include "gui/l10n/l10n.h"
 #include "gui/ui/root_ui.h"
@@ -1953,8 +1954,7 @@ bool Sound::allowNoteTails(ModelStackWithSoundFlags* modelStack, bool disregardS
 
 		anyActiveSources = sourceEverActive || anyActiveSources;
 
-		if (sourceEverActive && sources[s].oscType != OscType::DELXR_KICK
-		    && sources[s].oscType != OscType::DELXR_LXR_DRUM
+		if (sourceEverActive && !delxr::isEngine(sources[s].oscType)
 		    && (sources[s].oscType != OscType::SAMPLE || sources[s].repeatMode != SampleRepeatMode::ONCE
 		        || (!disregardSampleLoop && sources[s].hasAnyLoopEndPoint()))) {
 			return true;

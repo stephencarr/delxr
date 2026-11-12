@@ -12,15 +12,6 @@
 
 #include "lxr_port.h"
 
-/* xorshift32, standing in for the STM32 hardware random number generator */
-uint32_t GetRngValue(void) {
-	static uint32_t state = 0x2545F491u;
-	state ^= state << 13;
-	state ^= state >> 17;
-	state ^= state << 5;
-	return state;
-}
-
 /* Copied from the LXR firmware's MidiParser.c (Copyright (C) 2012-2026 Erica Synths). */
 #define SEMITONE_UP 1.0594630943592952645618252949463f
 float midiParser_calcDetune(uint8_t value) {

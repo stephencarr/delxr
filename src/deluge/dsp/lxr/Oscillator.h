@@ -10,8 +10,8 @@
  * Public License version 3, with the additional permission and terms in
  * NOTICE.md.
  *
- * Modified for Delxr on 2026-11-11: include paths changed for building inside the
- * Deluge firmware. NOTICE.md is alongside this file; see README.md there for provenance.
+ * Modified for Delxr: include paths changed and noise state made per oscillator.
+ * NOTICE.md is alongside this file; see README.md there for provenance.
  */
 
 
@@ -61,6 +61,7 @@ typedef struct OscStruct
 	uint16_t	midiFreq;  //upper 8 bit coarse, lower 8 bit fine -> the sound edit freq offset
 	uint8_t baseNote;		// the last played midi note
 	uint32_t startPhase;		// the OSC is reset to this phase on retrigger
+	uint32_t rngState;       // Delxr: independent pitched-noise stream; zero selects the initial seed
 } OscInfo;
 //-----------------------------------------------------------
 

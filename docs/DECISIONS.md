@@ -89,3 +89,32 @@ The LXR's global array of three drum voices became a struct passed by pointer; e
 
 - Why: both follow from including LXR code, whose licence is GPL-3.0-only and requires modified versions to be marked as such at startup.
 - Consequence: the firmware shows `DELXR` at startup. The project name and the "LXR drum" label still need a trademark decision.
+
+## 15. Extend the existing oscillator seam to every native LXR family
+
+The voice-suite branch adds independent snare/clap, cymbal, closed-hat and
+open-hat oscillator types. Appended enum values preserve existing numeric values;
+explicit menu ordering keeps the voices reachable on OSC1 and OSC2 whether audio
+inputs are connected or not. Each sounding unison source owns a pooled state and
+uses the original 64-sample LXR control clock.
+
+- Why: this completes the synthesis families using the architecture already played in `main`, while retaining Deluge sequencing and effects.
+- Consequence: the jam kit has eight independent rows rather than the LXR's fixed six instruments/seven tracks. Native Deluge choke mode gives the two hats a mutual choke relationship, with the existing held-audition exception.
+
+## 16. Four gold-knob performance controls per voice for this slice
+
+Keep the four spare parameter channels established in Experiment 002. The starter
+kit maps them to two gold-knob pages, with action-specific OLED labels. X/Y retain
+navigation; Select and Tempo receive no new engine-performance assignments.
+
+- Why: the user's left-encoder constraint and Deluge modifier conventions make this the smallest familiar playable surface.
+- Consequence: deeper waveform, transient and internal-filter controls remain future work alongside LXR effects and morphing. Parameter file/menu names stay borrowed; switching engines retains their prior values.
+
+## 17. Noise belongs to the oscillator, and portable bounds are explicit
+
+Every imported oscillator owns its software RNG state. Fix wavetable interpolation
+look-ahead wrapping and signed FM phase conversions, and bound wrapper controls.
+Disable finite-math-only and strict-aliasing assumptions for the imported C files.
+
+- Why: noise instances must not depend on rendering order, and sanitizer/production-build behavior must agree at supported control extremes.
+- Consequence: exact retriggers and arbitrary render-chunk partitioning can be tested; this is a source-based adaptation, not a claim of bit-identical LXR hardware output.

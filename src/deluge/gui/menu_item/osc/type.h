@@ -16,6 +16,7 @@
  */
 #pragma once
 #include "definitions_cxx.hpp"
+#include "dsp/delxr/oscillator_type.h"
 #include "gui/menu_item/formatted_title.h"
 #include "gui/menu_item/selection.h"
 #include "gui/menu_item/submenu.h"
@@ -40,18 +41,29 @@ public:
 	bool mayUseDx() const { return sourceId_ == 0; }
 
 	void readCurrentValue() override {
-		int32_t rawVal = static_cast<int32_t>(soundEditor.currentSound->sources[sourceId_].oscType);
-		if (!mayUseDx() && rawVal > static_cast<int32_t>(OscType::DX7)) {
-			rawVal -= 1;
+		const auto types = getOptionTypes();
+		OscType current = soundEditor.currentSound->sources[sourceId_].oscType;
+		// With no plug inserted, all input variants display the single generic Input option.
+		if (!AudioEngine::micPluggedIn && !AudioEngine::lineInPluggedIn
+		    && (current == OscType::INPUT_R || current == OscType::INPUT_STEREO)) {
+			current = OscType::INPUT_L;
 		}
-		setValue(rawVal);
+		for (size_t i = 0; i < types.size(); ++i) {
+			if (types[i] == current) {
+				setValue(static_cast<int32_t>(i));
+				return;
+			}
+		}
+		setValue(0);
 	}
 	void writeCurrentValue() override {
-		OscType oldValue = soundEditor.currentSound->sources[sourceId_].oscType;
-		auto newValue = getValue<OscType>();
-		if (!mayUseDx() && static_cast<int32_t>(newValue) >= static_cast<int32_t>(OscType::DX7)) {
-			newValue = static_cast<OscType>(static_cast<int32_t>(newValue) + 1);
+		const auto types = getOptionTypes();
+		const int32_t index = getValue();
+		if (index < 0 || index >= static_cast<int32_t>(types.size())) {
+			return;
 		}
+		OscType oldValue = soundEditor.currentSound->sources[sourceId_].oscType;
+		const OscType newValue = types[index];
 
 		const auto needs_unassignment = {
 		    OscType::INPUT_L,
@@ -61,6 +73,10 @@ public:
 		    OscType::DX7,
 		    OscType::DELXR_KICK,
 		    OscType::DELXR_LXR_DRUM,
+		    OscType::DELXR_LXR_SNARE,
+		    OscType::DELXR_LXR_CYMBAL,
+		    OscType::DELXR_LXR_CLOSED_HAT,
+		    OscType::DELXR_LXR_OPEN_HAT,
 
 		    // Haven't actually really determined if this needs to be here - maybe not?
 		    OscType::WAVETABLE,
@@ -80,7 +96,6 @@ public:
 	[[nodiscard]] std::string_view getTitle() const override { return FormattedTitle::title(); }
 
 	deluge::vector<std::string_view> getOptions(OptType optType) override {
-		(void)optType;
 		using enum l10n::String;
 		deluge::vector options = {
 		    l10n::getView(STRING_FOR_SINE),          //<
@@ -104,6 +119,10 @@ public:
 
 		options.emplace_back("Kick");     // Delxr kick engine
 		options.emplace_back("LXR drum"); // drum voice from the LXR firmware
+		options.emplace_back(optType == OptType::SHORT ? "LXR SN" : "LXR snare");
+		options.emplace_back(optType == OptType::SHORT ? "LXR CY" : "LXR cymbal");
+		options.emplace_back(optType == OptType::SHORT ? "LXR CH" : "LXR closed hat");
+		options.emplace_back(optType == OptType::SHORT ? "LXR OH" : "LXR open hat");
 
 		if (AudioEngine::micPluggedIn || AudioEngine::lineInPluggedIn) {
 			options.emplace_back(l10n::getView(STRING_FOR_INPUT_LEFT));
@@ -135,8 +154,8 @@ public:
 		oled_canvas::Canvas& image = OLED::main;
 
 		const OscType osc_type = soundEditor.currentSound->sources[sourceId_].oscType;
-		if (osc_type == OscType::DX7 || osc_type == OscType::DELXR_KICK || osc_type == OscType::DELXR_LXR_DRUM) {
-			const auto option = getOptions(OptType::FULL)[getValue()].data();
+		if (osc_type == OscType::DX7 || delxr::isEngine(osc_type)) {
+			const auto option = getOptions(OptType::SHORT)[getValue()].data();
 			return image.drawStringCentered(option, slot.start_x, slot.start_y + kHorizontalMenuSlotYOffset + 5,
 			                                kTextTitleSpacingX, kTextTitleSizeY, slot.width);
 		}
@@ -181,6 +200,33 @@ public:
 	}
 
 private:
+	// Menu order is independent of the enum's persisted values. Keep this alongside getOptions():
+	// OSC2 omits DX7, and disconnected inputs collapse to one option, but every engine stays selectable.
+	deluge::vector<OscType> getOptionTypes() const {
+		deluge::vector<OscType> types = {OscType::SINE, OscType::TRIANGLE, OscType::SQUARE,
+		                               OscType::ANALOG_SQUARE, OscType::SAW, OscType::ANALOG_SAW_2,
+		                               OscType::WAVETABLE};
+		if (soundEditor.currentSound->getSynthMode() == SynthMode::RINGMOD) {
+			return types;
+		}
+		types.emplace_back(OscType::SAMPLE);
+		if (mayUseDx()) {
+			types.emplace_back(OscType::DX7);
+		}
+		types.emplace_back(OscType::DELXR_KICK);
+		types.emplace_back(OscType::DELXR_LXR_DRUM);
+		types.emplace_back(OscType::DELXR_LXR_SNARE);
+		types.emplace_back(OscType::DELXR_LXR_CYMBAL);
+		types.emplace_back(OscType::DELXR_LXR_CLOSED_HAT);
+		types.emplace_back(OscType::DELXR_LXR_OPEN_HAT);
+		types.emplace_back(OscType::INPUT_L);
+		if (AudioEngine::micPluggedIn || AudioEngine::lineInPluggedIn) {
+			types.emplace_back(OscType::INPUT_R);
+			types.emplace_back(OscType::INPUT_STEREO);
+		}
+		return types;
+	}
+
 	uint8_t sourceId_;
 };
 

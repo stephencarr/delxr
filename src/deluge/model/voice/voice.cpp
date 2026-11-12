@@ -2449,8 +2449,7 @@ dontUseCache: {}
 			}
 
 		}
-		else if (sound.sources[s].oscType == OscType::DELXR_KICK
-		         || sound.sources[s].oscType == OscType::DELXR_LXR_DRUM) {
+		else if (delxr::isEngine(sound.sources[s].oscType)) {
 			static int32_t engineBuffer[SSI_TX_BUFFER_NUM_SAMPLES] __attribute__((aligned(CACHE_LINE_SIZE)));
 			// A Delxr engine's four controls ride on sound parameters that its oscillator otherwise leaves
 			// unused: pulse width, wavetable position, and the two FM feedbacks. See delxrControlName().
@@ -2472,32 +2471,64 @@ dontUseCache: {}
 				                                    numSamples, phaseIncrement);
 			}
 			else {
-				delxr::LxrDrumVoice* lxrDrum = unisonParts[u].sources[s].lxrDrum;
-				if (lxrDrum == nullptr) {
-					goto instantUnassign;
-				}
-				DelxrLxrDrumControls controls{
-				    .decay = control[0], .pitchAmount = control[1], .pitchDecay = control[2], .drive = control[3]};
-				if (lxrDrum->needsTrigger) {
-					delxr_lxr_drum_trigger(&lxrDrum->drum, &controls);
-					lxrDrum->needsTrigger = false;
-				}
 				// A kit row plays middle C, whose phase increment is 25479976; that plays the patch as tuned.
+				const float pitchRatio = phaseIncrement / 25479976.0f;
 				static int16_t lxrBuffer[SSI_TX_BUFFER_NUM_SAMPLES];
-				stillSounding = delxr_lxr_drum_render(&lxrDrum->drum, &controls, phaseIncrement / 25479976.0f,
-				                                      lxrBuffer, numSamples);
+				const OscType type = sound.sources[s].oscType;
+				if (type == OscType::DELXR_LXR_DRUM) {
+					delxr::LxrDrumVoice* lxrDrum = voiceUnisonPartSource->lxrDrum;
+					if (lxrDrum == nullptr) {
+						goto instantUnassign;
+					}
+					DelxrLxrDrumControls controls{
+					    .decay = control[0], .pitchAmount = control[1], .pitchDecay = control[2], .drive = control[3]};
+					if (lxrDrum->needsTrigger) {
+						delxr_lxr_drum_trigger(&lxrDrum->drum, &controls);
+						lxrDrum->needsTrigger = false;
+					}
+					stillSounding = delxr_lxr_drum_render(&lxrDrum->drum, &controls, pitchRatio, lxrBuffer, numSamples);
+				}
+				else if (type == OscType::DELXR_LXR_SNARE) {
+					delxr::LxrSnareVoice* lxrSnare = voiceUnisonPartSource->lxrSnare;
+					if (lxrSnare == nullptr) {
+						goto instantUnassign;
+					}
+					DelxrLxrSnareControls controls{
+					    .decay = control[0], .tone = control[1], .snappy = control[2], .clap = control[3]};
+					if (lxrSnare->needsTrigger) {
+						delxr_lxr_snare_trigger(&lxrSnare->snare, &controls);
+						lxrSnare->needsTrigger = false;
+					}
+					stillSounding = delxr_lxr_snare_render(&lxrSnare->snare, &controls, pitchRatio, lxrBuffer, numSamples);
+				}
+				else {
+					delxr::LxrMetalVoice* lxrMetal = voiceUnisonPartSource->lxrMetal;
+					if (lxrMetal == nullptr) {
+						goto instantUnassign;
+					}
+					DelxrLxrMetalControls controls{
+					    .decay = control[0], .fmAmount = control[1], .ratio = control[2], .tone = control[3]};
+					if (lxrMetal->needsTrigger) {
+						const DelxrLxrMetalType metalType = type == OscType::DELXR_LXR_CYMBAL ? DELXR_LXR_CYMBAL
+						    : type == OscType::DELXR_LXR_CLOSED_HAT ? DELXR_LXR_CLOSED_HAT : DELXR_LXR_OPEN_HAT;
+						delxr_lxr_metal_trigger(&lxrMetal->metal, metalType, &controls);
+						lxrMetal->needsTrigger = false;
+					}
+					stillSounding = delxr_lxr_metal_render(&lxrMetal->metal, &controls, pitchRatio, lxrBuffer, numSamples);
+				}
 				for (int32_t i = 0; i < numSamples; i++) {
-					engineBuffer[i] = lxrBuffer[i] << 16;
+					// Multiplication preserves the full signed Q15 -> Q31 range without shifting negative values.
+					engineBuffer[i] = static_cast<int32_t>(lxrBuffer[i]) * 65536;
 				}
 			}
 
 			int32_t sourceAmplitudeNow = sourceAmplitude;
 			for (int32_t i = 0; i < numSamples; i++) {
 				sourceAmplitudeNow += amplitudeIncrement;
-				int32_t amplified = multiply_32x32_rshift32(engineBuffer[i], sourceAmplitudeNow) << 1;
+				int32_t amplified = multiply_32x32_rshift32(engineBuffer[i], sourceAmplitudeNow) * 2;
 				if (stereoUnison) {
-					oscBuffer[(i << 1)] += multiply_32x32_rshift32(amplified, amplitudeL) << 2;
-					oscBuffer[(i << 1) + 1] += multiply_32x32_rshift32(amplified, amplitudeR) << 2;
+					oscBuffer[(i << 1)] += multiply_32x32_rshift32(amplified, amplitudeL) * 4;
+					oscBuffer[(i << 1) + 1] += multiply_32x32_rshift32(amplified, amplitudeR) * 4;
 				}
 				else {
 					oscBuffer[i] += amplified;

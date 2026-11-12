@@ -721,6 +721,18 @@ char const* oscTypeToString(OscType oscType) {
 	case OscType::DELXR_LXR_DRUM:
 		return "delxrLxrDrum";
 
+	case OscType::DELXR_LXR_SNARE:
+		return "delxrLxrSnare";
+
+	case OscType::DELXR_LXR_CYMBAL:
+		return "delxrLxrCymbal";
+
+	case OscType::DELXR_LXR_CLOSED_HAT:
+		return "delxrLxrClosedHat";
+
+	case OscType::DELXR_LXR_OPEN_HAT:
+		return "delxrLxrOpenHat";
+
 	default:
 		__builtin_unreachable();
 	}
@@ -766,6 +778,18 @@ OscType stringToOscType(char const* string) {
 	}
 	else if (!strcmp(string, "delxrLxrDrum")) {
 		return OscType::DELXR_LXR_DRUM;
+	}
+	else if (!strcmp(string, "delxrLxrSnare")) {
+		return OscType::DELXR_LXR_SNARE;
+	}
+	else if (!strcmp(string, "delxrLxrCymbal")) {
+		return OscType::DELXR_LXR_CYMBAL;
+	}
+	else if (!strcmp(string, "delxrLxrClosedHat")) {
+		return OscType::DELXR_LXR_CLOSED_HAT;
+	}
+	else if (!strcmp(string, "delxrLxrOpenHat")) {
+		return OscType::DELXR_LXR_OPEN_HAT;
 	}
 	else {
 		return OscType::TRIANGLE;

@@ -14,6 +14,10 @@ file(GLOB deluge_dsp_lxr_SOURCES ${CMAKE_CURRENT_LIST_DIR}/lxr/*.c)
 file(GLOB deluge_dsp_delxr_SOURCES ${CMAKE_CURRENT_LIST_DIR}/delxr/*.cpp)
 set_source_files_properties(${deluge_dsp_lxr_SOURCES} ${deluge_dsp_delxr_SOURCES}
     PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+# The opaque C voice storage is deliberately overlaid by its private instance.
+# Preserve the wrappers' finite-input guards despite upstream's -ffast-math.
+set_source_files_properties(${deluge_dsp_lxr_SOURCES}
+    PROPERTIES COMPILE_OPTIONS "-fno-strict-aliasing;-fno-finite-math-only")
 
 target_include_directories(deluge_dsp PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/..

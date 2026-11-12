@@ -146,7 +146,7 @@ void calcDrumVoiceAsync(DrumVoice* voice)
 //---------------------------------------------------
 void calcDrumVoiceSyncBlock(DrumVoice* voice, int16_t* buf, const uint8_t size)
 {
-	int16_t modBuf[size];
+	int16_t modBuf[OUTPUT_DMA_SIZE]; // Delxr wrappers always render native 64-sample blocks
 
 	//calc next mod osc sampleBlock - int16_t processing
 	calcNextOscSampleBlock(&voice->modOsc,modBuf,size,voice->fmModAmount, voice->pwm);

@@ -37,8 +37,7 @@ static inline uint32_t __QSUB16(uint32_t a, uint32_t b) {
 }
 #define __CLZ(value) ((value) ? (uint32_t)__builtin_clz(value) : 32u)
 
-/* The LXR reads a hardware random number generator; Delxr uses a small software one. */
-uint32_t GetRngValue(void);
+/* The LXR's hardware RNG is replaced by per-oscillator state in Oscillator.c. */
 
 /* From the LXR firmware's MidiParser.c and sequencer.h. */
 float midiParser_calcDetune(uint8_t value);

@@ -96,6 +96,24 @@ bool VoiceUnisonPartSource::noteOn(Voice* voice, Source* source, VoiceSamplePlay
 		}
 		lxrDrum->needsTrigger = true; // triggered at the next render, once the controls are known
 	}
+	else if (synthMode == SynthMode::SUBTRACTIVE && source->oscType == OscType::DELXR_LXR_SNARE) {
+		if (lxrSnare == nullptr) {
+			lxrSnare = delxr::acquireLxrSnareVoice();
+			if (lxrSnare == nullptr) {
+				return false;
+			}
+		}
+		lxrSnare->needsTrigger = true;
+	}
+	else if (synthMode == SynthMode::SUBTRACTIVE && delxr::isLxrMetal(source->oscType)) {
+		if (lxrMetal == nullptr) {
+			lxrMetal = delxr::acquireLxrMetalVoice();
+			if (lxrMetal == nullptr) {
+				return false;
+			}
+		}
+		lxrMetal->needsTrigger = true;
+	}
 	else {
 		if (oscRetriggerPhase != 0xFFFFFFFF) {
 			oscPos = getOscInitialPhaseForZero(source->oscType) + oscRetriggerPhase;
@@ -125,6 +143,16 @@ void VoiceUnisonPartSource::unassign(bool deletingSong) {
 	if (lxrDrum != nullptr) {
 		delxr::releaseLxrDrumVoice(lxrDrum);
 		lxrDrum = nullptr;
+	}
+
+	if (lxrSnare != nullptr) {
+		delxr::releaseLxrSnareVoice(lxrSnare);
+		lxrSnare = nullptr;
+	}
+
+	if (lxrMetal != nullptr) {
+		delxr::releaseLxrMetalVoice(lxrMetal);
+		lxrMetal = nullptr;
 	}
 
 	if (livePitchShifter != nullptr) {

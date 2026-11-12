@@ -370,11 +370,16 @@ enum class OscType : uint8_t {
 	INPUT_L,
 	INPUT_R,
 	INPUT_STEREO,
+	// Append new types: existing enum values are also used by binary formats.
+	DELXR_LXR_SNARE,
+	DELXR_LXR_CYMBAL,
+	DELXR_LXR_CLOSED_HAT,
+	DELXR_LXR_OPEN_HAT,
 };
 
 constexpr OscType kLastRingmoddableOscType = OscType::WAVETABLE;
 constexpr int32_t kNumOscTypesRingModdable = util::to_underlying(kLastRingmoddableOscType) + 1;
-constexpr int32_t kNumOscTypes = util::to_underlying(OscType::INPUT_STEREO) + 1;
+constexpr int32_t kNumOscTypes = util::to_underlying(OscType::DELXR_LXR_OPEN_HAT) + 1;
 
 /** Integer index into Sound::lfoConfig[].
  *

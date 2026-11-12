@@ -20,6 +20,7 @@
 #include "definitions_cxx.hpp"
 #include "dsp/delxr/kick.h"
 #include "dsp/delxr/lxr_drum.h"
+#include "dsp/delxr/lxr_voices.h"
 #include "model/sample/sample.h"
 #include <gsl/gsl>
 
@@ -52,4 +53,6 @@ public:
 	gsl::owner<DxVoice*> dxVoice = nullptr;
 	delxr::KickVoice delxrKick;
 	gsl::owner<delxr::LxrDrumVoice*> lxrDrum = nullptr;
+	gsl::owner<delxr::LxrSnareVoice*> lxrSnare = nullptr;
+	gsl::owner<delxr::LxrMetalVoice*> lxrMetal = nullptr;
 };

@@ -17,6 +17,7 @@
 
 #include "modulation/params/param.h"
 #include "definitions_cxx.hpp"
+#include "dsp/delxr/oscillator_type.h"
 #include "gui/l10n/l10n.h"
 #include "gui/l10n/strings.h"
 #include "model/mod_controllable/filters/filter_config.h"
@@ -115,7 +116,13 @@ void getPatchCableFromShortcut(int32_t xDisplay, int32_t yDisplay, ParamDescript
 static char const* delxrControlName(int32_t p, ModControllableAudio* modControllable) {
 	static char const* const controlNames[4] = {"Kick decay", "Kick sweep", "Sweep time", "Kick drive"};
 	static char const* const lxrNames[4] = {"LXR decay", "LXR pitch amt", "LXR pitch dec", "LXR drive"};
+	static char const* const snareNames[4] = {"Snare decay", "Snare tone", "Snare noise mix", "Snare clap"};
+	static char const* const metalNames[4] = {"Metal decay", "Metal FM amt", "Metal FM tune", "Metal tone"};
 	auto* sound = static_cast<Sound*>(modControllable);
+	// In FM mode these parameters retain their normal carrier/modulator meaning.
+	if (sound->getSynthMode() != SynthMode::SUBTRACTIVE) {
+		return nullptr;
+	}
 	for (int32_t s = 0; s < kNumSources; s++) {
 		char const* const* names = nullptr;
 		if (sound->sources[s].oscType == OscType::DELXR_KICK) {
@@ -123,6 +130,12 @@ static char const* delxrControlName(int32_t p, ModControllableAudio* modControll
 		}
 		else if (sound->sources[s].oscType == OscType::DELXR_LXR_DRUM) {
 			names = lxrNames;
+		}
+		else if (sound->sources[s].oscType == OscType::DELXR_LXR_SNARE) {
+			names = snareNames;
+		}
+		else if (delxr::isLxrMetal(sound->sources[s].oscType)) {
+			names = metalNames;
 		}
 		else {
 			continue;
