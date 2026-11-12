@@ -17,6 +17,7 @@ namespace delxr {
 struct LxrPatch {
 	DelxrLxrEngine engine = DELXR_LXR_DRUM1;
 	uint8_t kit[DELXR_LXR_KIT_BYTES];
+	uint8_t lfoTarget = 0; ///< LXR parameter number the voice's LFO modulates, 0 = none
 
 	LxrPatch(); ///< starts as the LXR's built-in init kit
 };

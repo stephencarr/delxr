@@ -2478,7 +2478,8 @@ dontUseCache: {}
 					goto instantUnassign;
 				}
 				if (lxrVoice->needsTrigger) {
-					delxr_lxr_voice_trigger(&lxrVoice->voice, lxrPatch->engine, lxrPatch->kit, lxrVoice->velocity);
+					delxr_lxr_voice_trigger(&lxrVoice->voice, lxrPatch->engine, lxrPatch->kit, lxrPatch->lfoTarget,
+					                        lxrVoice->velocity, playbackHandler.calculateBPMForDisplay());
 					lxrVoice->needsTrigger = false;
 				}
 				// A kit row plays middle C, whose phase increment is 25479976; that plays the patch as tuned.

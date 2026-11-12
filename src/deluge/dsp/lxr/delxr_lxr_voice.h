@@ -44,8 +44,10 @@ typedef struct DelxrLxrVoice {
 } DelxrLxrVoice;
 
 /* Sets the voice up from the kit's parameters for its engine and starts it.
- * velocity is 1..127, as the LXR receives it. */
-void delxr_lxr_voice_trigger(DelxrLxrVoice* voice, DelxrLxrEngine engine, const uint8_t* kit, uint8_t velocity);
+ * velocity is 1..127, as the LXR receives it. lfoTarget is the LXR parameter number the voice's
+ * LFO modulates (0 = none); bpm sets the tempo for tempo-synced LFOs. */
+void delxr_lxr_voice_trigger(DelxrLxrVoice* voice, DelxrLxrEngine engine, const uint8_t* kit, uint8_t lfoTarget,
+                             uint8_t velocity, float bpm);
 
 /* Writes numSamples of 16-bit audio. pitchRatio transposes the kit's tuning (1 = as saved).
  * Returns 0 once the voice has finished sounding. */

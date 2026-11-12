@@ -8,9 +8,15 @@
  * Part of Delxr's port of the LXR voices. Licensed under the GNU General Public License
  * version 3, with the additional permission and terms in NOTICE.md alongside this file.
  *
- * applyKit() sets each voice parameter exactly as the LXR firmware's MidiParser.c does when a kit
- * is loaded (preset_sendDrumsetParameters() sends every parameter through it). Panning, LFOs,
+ * The apply*() functions set each voice parameter exactly as the LXR firmware's MidiParser.c does
+ * when a kit is loaded (preset_sendDrumsetParameters() sends every parameter through it). Panning,
  * velocity routing and audio-output routing are not applied here.
+ *
+ * The voice's LFO is the LXR's (lfo.c): once per block it moves its target parameter around the
+ * kit's value by up to the LFO amount, and the parameter is applied again, as modNode_updateValue()
+ * does. Differences from the LXR: an LFO only modulates a parameter of its own voice, and it
+ * starts from its phase offset when the voice is triggered (on the LXR a free-running LFO keeps
+ * going between hits).
  *
  * The LXR renders fixed 64-sample blocks and advances envelopes once per block. The Deluge asks
  * for blocks of any size, so each voice renders 64 samples at a time into its own buffer.
@@ -24,6 +30,8 @@
 #include "Parameters.h"
 #include "Snare.h"
 #include "valueShaper.h"
+#include "wavetable.h"
+#include <math.h>
 #include <string.h>
 
 /* From the LXR firmware's globals.h and MidiParser.c. */
@@ -45,6 +53,15 @@ typedef struct {
 	float decimationRate;
 	float decimationCount;
 	int16_t decimationSample;
+	/* The kit's values; the LFO modulates a copy of its target around them. */
+	uint8_t kit[DELXR_LXR_KIT_BYTES];
+	uint8_t lfoTarget;
+	uint8_t lfoWave;
+	float lfoAmount;
+	uint32_t lfoPhase;
+	uint32_t lfoPhaseInc;
+	float lfoRandom;
+	uint32_t rngState;
 } Instance;
 
 _Static_assert(sizeof(Instance) <= sizeof(DelxrLxrVoice), "raise DELXR_LXR_VOICE_BYTES");
@@ -67,14 +84,23 @@ static uint8_t finiteDecay(uint8_t value) {
 	return value > 126 ? 126 : value;
 }
 
+/* Before the trigger these only store the tuning; the trigger then computes the frequency from it.
+ * Once the voice is playing (baseNote set), the LXR recalculates the frequency, as its MidiParser.c
+ * does with osc_recalcFreq() after a tune change. */
 static void setCoarse(OscInfo* osc, uint8_t value) {
 	osc->midiFreq &= 0x00ff;
 	osc->midiFreq |= value << 8;
+	if (osc->baseNote) {
+		osc_recalcFreq(osc);
+	}
 }
 
 static void setFine(OscInfo* osc, uint8_t value) {
 	osc->midiFreq &= 0xff00;
 	osc->midiFreq |= value;
+	if (osc->baseNote) {
+		osc_recalcFreq(osc);
+	}
 }
 
 static void setFilterFreq(ResonantFilter* filter, uint8_t value) {
@@ -93,6 +119,9 @@ static float transientPitch(uint8_t value) {
 static float decimationRate(uint8_t value) {
 	return valueShaperF2F(toFloat(value), -0.7f);
 }
+
+static void applyKit(Instance* instance, const uint8_t* kit);
+static void lfoApply(Instance* instance);
 
 /* ---- Kit parameters to voice ----------------------------------------------------------------- */
 
@@ -238,44 +267,180 @@ static void applyHat(Instance* instance, const uint8_t* p) {
 	instance->decimationRate = decimationRate(p[PAR_VOICE_DECIMATION6]);
 }
 
+/* Applies the parameters of the instance's engine. Safe to call again while the voice sounds: it
+ * only sets values, as the LXR does when a parameter changes during a note. */
+static void applyKit(Instance* instance, const uint8_t* kit) {
+	switch (instance->engine) {
+	case DELXR_LXR_DRUM1:
+	case DELXR_LXR_DRUM2:
+	case DELXR_LXR_DRUM3:
+		applyDrum(instance, kit, instance->engine - DELXR_LXR_DRUM1);
+		break;
+	case DELXR_LXR_SNARE:
+		applySnare(instance, kit);
+		break;
+	case DELXR_LXR_CYMBAL:
+		applyCymbal(instance, kit);
+		break;
+	default: {
+		/* HiHat_trigger() picks the note's decay; later decay changes only take effect at the next
+		 * hit, as on the LXR. applyHat() sets the envelope's decay, so keep the note's one. */
+		HiHatVoice* h = &instance->v.hat;
+		const int playing = h->oscVolEg.state != EG_STOPPED;
+		const double noteDecay = h->oscVolEg.decay;
+		applyHat(instance, kit);
+		if (playing) {
+			h->oscVolEg.decay = noteDecay;
+		}
+		break;
+	}
+	}
+}
+
+/* ---- LFO (from lfo.c) -------------------------------------------------------------------------- */
+
+
+/* lfo_calcPhaseInc() and lfo_setFreq(), with the sequencer's tempo passed in. */
+static uint32_t lfoPhaseIncrement(uint8_t freqValue, uint8_t sync, float bpm) {
+	const float lfoRate = REAL_FS / (float)OUTPUT_DMA_SIZE;
+	float f = toFloat(freqValue);
+	f = 0.0078125f + f * (1.f - 0.0078125f);
+	f = f * f * f;
+	float freq = f * 200.f;
+	if (sync >= 1 && sync <= 11) {
+		static const float scalers[12] = {0, 0.25f, 0.5f, 1, 2, 3, 4, 6, 8, 12, 16, 32};
+		const float tempoAsFrequency = bpm > 0.f ? bpm / 60.f / 4 : 0.f;
+		freq = tempoAsFrequency * scalers[sync];
+	}
+	return (uint32_t)(freq / lfoRate * 4294967295.f);
+}
+
+static uint32_t lfoRandomNumber(Instance* instance) {
+	uint32_t s = instance->rngState ? instance->rngState : 0x2545F491u;
+	s ^= s << 13;
+	s ^= s >> 17;
+	s ^= s << 5;
+	instance->rngState = s;
+	return s;
+}
+
+/* lfo_calc(): the next LFO value, 0..1 */
+static float lfoNext(Instance* instance) {
+	const uint32_t oldPhase = instance->lfoPhase;
+	instance->lfoPhase += instance->lfoPhaseInc;
+	const uint32_t phase = instance->lfoPhase;
+	switch (instance->lfoWave) {
+	case 0: /* sine */
+		return ((sine_table[phase >> 20] / 32767.f) + 1) / 2.f;
+	case 1: /* triangle */
+		return 1.f - fabsf((phase / 4294967295.f) * 2 - 1);
+	case 2: /* saw up */
+		return phase / 4294967295.f;
+	case 3: /* saw down */
+		return (4294967295u - phase) / 4294967295.f;
+	case 4: /* square */
+		return phase > 0x7fffffff ? 1.f : 0.f;
+	case 5: /* sample and hold noise */
+		if (oldPhase > phase) {
+			instance->lfoRandom = lfoRandomNumber(instance) / 4294967295.f;
+		}
+		return instance->lfoRandom;
+	case 6: { /* exponential up */
+		const float x = phase / 4294967295.f;
+		return x * x * x;
+	}
+	case 7: { /* exponential down */
+		const float x = (4294967295u - phase) / 4294967295.f;
+		return x * x * x;
+	}
+	default:
+		return 0.f;
+	}
+}
+
+/* modNode_updateValue(): move the target around its kit value, then apply the voice's parameters
+ * again. */
+static void lfoApply(Instance* instance) {
+	if (instance->lfoTarget == 0 || instance->lfoAmount == 0.f) {
+		return;
+	}
+	const float value = lfoNext(instance);
+	float modulated = toFloat(instance->kit[instance->lfoTarget]) + instance->lfoAmount * (value * 2.f - 1.f);
+	modulated = modulated < 0.f ? 0.f : (modulated > 1.f ? 1.f : modulated);
+
+	uint8_t kit[DELXR_LXR_KIT_BYTES];
+	memcpy(kit, instance->kit, sizeof(kit));
+	kit[instance->lfoTarget] = (uint8_t)(modulated * 127.f + 0.5f);
+	applyKit(instance, kit);
+}
+
+/* Which LFO settings belong to each engine (the hat's two triggers share the hat's LFO). */
+static int lfoIndex(DelxrLxrEngine engine) {
+	return engine <= DELXR_LXR_CYMBAL ? (int)engine : 5;
+}
+
 /* ---- Public interface ------------------------------------------------------------------------ */
 
-void delxr_lxr_voice_trigger(DelxrLxrVoice* voice, DelxrLxrEngine engine, const uint8_t* kit, uint8_t velocity) {
+void delxr_lxr_voice_trigger(DelxrLxrVoice* voice, DelxrLxrEngine engine, const uint8_t* kit, uint8_t lfoTarget,
+                             uint8_t velocity, float bpm) {
 	Instance* instance = (Instance*)voice;
 	memset(instance, 0, sizeof(*instance));
+	if (engine > DELXR_LXR_OPEN_HAT) {
+		engine = DELXR_LXR_CLOSED_HAT;
+	}
 	instance->engine = engine;
+	memcpy(instance->kit, kit, sizeof(instance->kit));
 	if (velocity == 0) {
 		velocity = 1;
 	}
+
+	const int n = lfoIndex(engine);
+	instance->lfoTarget = lfoTarget < PAR_MORPH_KIT_DEST ? lfoTarget : 0;
+	instance->lfoWave = kit[PAR_WAVE_LFO1 + n];
+	instance->lfoAmount = toFloat(kit[PAR_AMOUNT_LFO1 + n]);
+	instance->lfoPhaseInc = lfoPhaseIncrement(kit[PAR_FREQ_LFO1 + n], kit[PAR_SYNC_LFO1 + n], bpm);
+	instance->lfoPhase = (uint32_t)(toFloat(kit[PAR_OFFSET_LFO1 + n]) * 4294967295.f);
+	instance->rngState = 0x9E3779B9u ^ (uint32_t)engine;
 
 	switch (engine) {
 	case DELXR_LXR_DRUM1:
 	case DELXR_LXR_DRUM2:
 	case DELXR_LXR_DRUM3:
 		initDrumVoice(&instance->v.drum);
-		applyDrum(instance, kit, engine - DELXR_LXR_DRUM1);
+		break;
+	case DELXR_LXR_SNARE:
+		Snare_init(&instance->v.snare);
+		break;
+	case DELXR_LXR_CYMBAL:
+		Cymbal_init(&instance->v.cymbal);
+		break;
+	default:
+		HiHat_init(&instance->v.hat);
+		break;
+	}
+
+	/* The kit's values, then the LFO's first value on top: on the LXR the LFO is already running
+	 * when a voice is hit, so the trigger sees its target already modulated. */
+	applyKit(instance, kit);
+	lfoApply(instance);
+
+	switch (engine) {
+	case DELXR_LXR_DRUM1:
+	case DELXR_LXR_DRUM2:
+	case DELXR_LXR_DRUM3:
 		Drum_trigger(&instance->v.drum, velocity, SEQ_DEFAULT_NOTE);
 		/* LXR voices live forever, so their parameter smoothers have long settled; this one is new. */
 		setOnePoleValue(&instance->v.drum.MixerPageFilter[0], instance->v.drum.vol);
 		setOnePoleValue(&instance->v.drum.distortion.DriveParamFilter, instance->v.drum.distortion.shape);
 		break;
 	case DELXR_LXR_SNARE:
-		Snare_init(&instance->v.snare);
-		applySnare(instance, kit);
 		Snare_trigger(&instance->v.snare, velocity, SEQ_DEFAULT_NOTE);
 		break;
 	case DELXR_LXR_CYMBAL:
-		Cymbal_init(&instance->v.cymbal);
-		applyCymbal(instance, kit);
 		Cymbal_trigger(&instance->v.cymbal, velocity, SEQ_DEFAULT_NOTE);
 		break;
-	case DELXR_LXR_CLOSED_HAT:
-	case DELXR_LXR_OPEN_HAT:
 	default:
-		instance->engine = engine == DELXR_LXR_OPEN_HAT ? DELXR_LXR_OPEN_HAT : DELXR_LXR_CLOSED_HAT;
-		HiHat_init(&instance->v.hat);
-		applyHat(instance, kit);
-		HiHat_trigger(&instance->v.hat, velocity, instance->engine == DELXR_LXR_OPEN_HAT, SEQ_DEFAULT_NOTE);
+		HiHat_trigger(&instance->v.hat, velocity, engine == DELXR_LXR_OPEN_HAT, SEQ_DEFAULT_NOTE);
 		break;
 	}
 
@@ -297,6 +462,7 @@ static void transpose(OscInfo* osc, float pitchRatio) {
  * amplitude envelope has ended. */
 static int renderBlock(Instance* instance, float pitchRatio) {
 	int ended = 0;
+	lfoApply(instance);
 	switch (instance->engine) {
 	case DELXR_LXR_DRUM1:
 	case DELXR_LXR_DRUM2:

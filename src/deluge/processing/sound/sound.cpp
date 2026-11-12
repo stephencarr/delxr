@@ -3421,6 +3421,14 @@ Error Sound::readSourceFromFile(Deserializer& reader, int32_t s, ParamManagerFor
 			reader.readTagOrAttributeValueHexBytes(patch->kit, DELXR_LXR_KIT_BYTES);
 			reader.exitTag("lxrKit");
 		}
+		else if (!strcmp(tagName, "lxrLfoTarget")) {
+			delxr::LxrPatch* patch = source->ensureLxrPatch();
+			if (patch == nullptr) {
+				return Error::INSUFFICIENT_RAM;
+			}
+			patch->lfoTarget = reader.readTagOrAttributeValueInt();
+			reader.exitTag("lxrLfoTarget");
+		}
 		else if (!strcmp(tagName, "dx7randomdetune")) {
 			DxPatch* patch = source->ensureDxPatch();
 			if (patch == nullptr) {
@@ -3789,6 +3797,9 @@ void Sound::writeSourceToFile(Serializer& writer, int32_t s, char const* tagName
 			if (source->lxrPatch) {
 				writer.writeAttribute("lxrEngine", delxr::lxrEngineToString(source->lxrPatch->engine));
 				writer.writeAttributeHexBytes("lxrKit", source->lxrPatch->kit, DELXR_LXR_KIT_BYTES);
+				if (source->lxrPatch->lfoTarget != 0) {
+					writer.writeAttribute("lxrLfoTarget", source->lxrPatch->lfoTarget);
+				}
 			}
 			goto justCloseTag;
 		}

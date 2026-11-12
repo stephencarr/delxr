@@ -12,6 +12,7 @@
 #   DELXR_SKIN_SCALE  emulator window size: auto (default, fits the main display),
 #                     native, or a percentage from 10 to 100
 #   DELXR_SD_IMAGE    SD card image to use (default: build/delxr-sd.img)
+#   DELXR_NO_REPO_CARD set to skip copying the repo's sdcard/ onto the card
 #   DELXR_SD_SOURCE   folder snapshotted into the dev SD image on first run
 #                     (default: DelugEmu's own card folder)
 set -euo pipefail
@@ -53,7 +54,7 @@ run() {
     fi
 
     # Copy the repo's own card files (sdcard/, e.g. Delxr test kits) onto the image.
-    if [ -d sdcard ]; then
+    if [ -d sdcard ] && [ -z "${DELXR_NO_REPO_CARD:-}" ]; then
         local dev mp
         dev="$(hdiutil attach -imagekey diskimage-class=CRawDiskImage "${SD_IMAGE}" | head -n 1 | awk '{print $1}')"
         mp="$(diskutil info "${dev}" | awk -F': *' '/Mount Point/ {print $2}')"
