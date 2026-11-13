@@ -2478,8 +2478,11 @@ dontUseCache: {}
 					goto instantUnassign;
 				}
 				if (lxrVoice->needsTrigger) {
-					delxr_lxr_voice_trigger(&lxrVoice->voice, lxrPatch->engine, lxrPatch->kit, lxrPatch->lfoTarget,
-					                        lxrVoice->velocity, playbackHandler.calculateBPMForDisplay());
+					// Velocity reaches the sound through the Deluge's own patching (velocity -> volume and
+					// any other cables), as for every other source, so the LXR voice itself plays at full
+					// velocity. Otherwise a kit with the LXR's velocity switch on would apply it twice.
+					delxr_lxr_voice_trigger(&lxrVoice->voice, lxrPatch->engine, lxrPatch->kit, lxrPatch->lfoTarget, 127,
+					                        playbackHandler.calculateBPMForDisplay());
 					lxrVoice->needsTrigger = false;
 				}
 				// A kit row plays middle C, whose phase increment is 25479976; that plays the patch as tuned.
@@ -2494,7 +2497,9 @@ dontUseCache: {}
 			int32_t sourceAmplitudeNow = sourceAmplitude;
 			for (int32_t i = 0; i < numSamples; i++) {
 				sourceAmplitudeNow += amplitudeIncrement;
-				int32_t amplified = multiply_32x32_rshift32(engineBuffer[i], sourceAmplitudeNow) << 1;
+				// Same gain as sample playback (VoiceSample applies amplitude << 3 to full-scale audio), so a
+				// Delxr engine at full scale is as loud as a full-scale sample.
+				int32_t amplified = multiply_32x32_rshift32(engineBuffer[i], sourceAmplitudeNow) << 3;
 				if (stereoUnison) {
 					oscBuffer[(i << 1)] += multiply_32x32_rshift32(amplified, amplitudeL) << 2;
 					oscBuffer[(i << 1) + 1] += multiply_32x32_rshift32(amplified, amplitudeR) << 2;
